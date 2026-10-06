@@ -1,0 +1,1275 @@
+{
+  "version": 1,
+  "source": "ctc",
+  "scriptHash": "4a5ac62a",
+  "words": [
+    {
+      "i": 0,
+      "text": "Your",
+      "norm": "your",
+      "start": 0.15,
+      "end": 0.34,
+      "section": "hook",
+      "sentence": 0,
+      "conf": 1
+    },
+    {
+      "i": 1,
+      "text": "product",
+      "norm": "product",
+      "start": 0.35,
+      "end": 0.72,
+      "section": "hook",
+      "sentence": 0,
+      "conf": 1
+    },
+    {
+      "i": 2,
+      "text": "ships",
+      "norm": "ships",
+      "start": 0.73,
+      "end": 1.14,
+      "section": "hook",
+      "sentence": 0,
+      "conf": 1
+    },
+    {
+      "i": 3,
+      "text": "every",
+      "norm": "every",
+      "start": 1.15,
+      "end": 1.44,
+      "section": "hook",
+      "sentence": 0,
+      "conf": 1
+    },
+    {
+      "i": 4,
+      "text": "week.",
+      "norm": "week",
+      "start": 1.45,
+      "end": 1.71,
+      "section": "hook",
+      "sentence": 0,
+      "conf": 0.99
+    },
+    {
+      "i": 5,
+      "text": "But",
+      "norm": "but",
+      "start": 2.12,
+      "end": 2.25,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 1
+    },
+    {
+      "i": 6,
+      "text": "your",
+      "norm": "your",
+      "start": 2.26,
+      "end": 2.43,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 0.99
+    },
+    {
+      "i": 7,
+      "text": "dashboards",
+      "norm": "dashboards",
+      "start": 2.44,
+      "end": 3.13,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 0.75
+    },
+    {
+      "i": 8,
+      "text": "are",
+      "norm": "are",
+      "start": 3.14,
+      "end": 3.27,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 1
+    },
+    {
+      "i": 9,
+      "text": "always",
+      "norm": "always",
+      "start": 3.3,
+      "end": 3.83,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 1
+    },
+    {
+      "i": 10,
+      "text": "one",
+      "norm": "one",
+      "start": 3.84,
+      "end": 4.01,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 1
+    },
+    {
+      "i": 11,
+      "text": "step",
+      "norm": "step",
+      "start": 4.02,
+      "end": 4.24,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 1
+    },
+    {
+      "i": 12,
+      "text": "behind.",
+      "norm": "behind",
+      "start": 4.31,
+      "end": 4.93,
+      "section": "hook",
+      "sentence": 1,
+      "conf": 1
+    },
+    {
+      "i": 13,
+      "text": "Meet",
+      "norm": "meet",
+      "start": 5.5,
+      "end": 5.91,
+      "section": "intro",
+      "sentence": 2,
+      "conf": 0.85
+    },
+    {
+      "i": 14,
+      "text": "Orbit.",
+      "norm": "orbit",
+      "start": 5.92,
+      "end": 6.35,
+      "section": "intro",
+      "sentence": 2,
+      "conf": 0.99
+    },
+    {
+      "i": 15,
+      "text": "Real-time",
+      "norm": "realtime",
+      "start": 6.66,
+      "end": 7.43,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 1
+    },
+    {
+      "i": 16,
+      "text": "product",
+      "norm": "product",
+      "start": 7.44,
+      "end": 7.99,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 1
+    },
+    {
+      "i": 17,
+      "text": "analytics",
+      "norm": "analytics",
+      "start": 8,
+      "end": 8.81,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 0.95
+    },
+    {
+      "i": 18,
+      "text": "that",
+      "norm": "that",
+      "start": 8.82,
+      "end": 8.98,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 0.99
+    },
+    {
+      "i": 19,
+      "text": "keeps",
+      "norm": "keeps",
+      "start": 9,
+      "end": 9.35,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 1
+    },
+    {
+      "i": 20,
+      "text": "up",
+      "norm": "up",
+      "start": 9.36,
+      "end": 9.43,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 1
+    },
+    {
+      "i": 21,
+      "text": "with",
+      "norm": "with",
+      "start": 9.46,
+      "end": 9.6,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 1
+    },
+    {
+      "i": 22,
+      "text": "your",
+      "norm": "your",
+      "start": 9.61,
+      "end": 9.79,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 0.97
+    },
+    {
+      "i": 23,
+      "text": "team.",
+      "norm": "team",
+      "start": 9.8,
+      "end": 10.21,
+      "section": "intro",
+      "sentence": 3,
+      "conf": 0.73
+    },
+    {
+      "i": 24,
+      "text": "Every",
+      "norm": "every",
+      "start": 10.77,
+      "end": 11.09,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 25,
+      "text": "event,",
+      "norm": "event",
+      "start": 11.1,
+      "end": 11.42,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 26,
+      "text": "every",
+      "norm": "every",
+      "start": 11.59,
+      "end": 11.95,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 27,
+      "text": "funnel,",
+      "norm": "funnel",
+      "start": 11.96,
+      "end": 12.34,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 0.96
+    },
+    {
+      "i": 28,
+      "text": "every",
+      "norm": "every",
+      "start": 12.36,
+      "end": 12.75,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 29,
+      "text": "user",
+      "norm": "user",
+      "start": 12.76,
+      "end": 13.07,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 0.73
+    },
+    {
+      "i": 30,
+      "text": "journey,",
+      "norm": "journey",
+      "start": 13.08,
+      "end": 13.48,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 0.77
+    },
+    {
+      "i": 31,
+      "text": "live",
+      "norm": "live",
+      "start": 13.82,
+      "end": 14.17,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 32,
+      "text": "in",
+      "norm": "in",
+      "start": 14.18,
+      "end": 14.39,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 33,
+      "text": "one",
+      "norm": "one",
+      "start": 14.4,
+      "end": 14.57,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 1
+    },
+    {
+      "i": 34,
+      "text": "workspace.",
+      "norm": "workspace",
+      "start": 14.58,
+      "end": 15.32,
+      "section": "workspace",
+      "sentence": 4,
+      "conf": 0.68
+    },
+    {
+      "i": 35,
+      "text": "No",
+      "norm": "no",
+      "start": 15.9,
+      "end": 16.18,
+      "section": "nomore",
+      "sentence": 5,
+      "conf": 1
+    },
+    {
+      "i": 36,
+      "text": "more",
+      "norm": "more",
+      "start": 16.19,
+      "end": 16.44,
+      "section": "nomore",
+      "sentence": 5,
+      "conf": 1
+    },
+    {
+      "i": 37,
+      "text": "waiting.",
+      "norm": "waiting",
+      "start": 16.45,
+      "end": 16.89,
+      "section": "nomore",
+      "sentence": 5,
+      "conf": 0.97
+    },
+    {
+      "i": 38,
+      "text": "No",
+      "norm": "no",
+      "start": 17.22,
+      "end": 17.48,
+      "section": "nomore",
+      "sentence": 6,
+      "conf": 1
+    },
+    {
+      "i": 39,
+      "text": "more",
+      "norm": "more",
+      "start": 17.49,
+      "end": 17.76,
+      "section": "nomore",
+      "sentence": 6,
+      "conf": 1
+    },
+    {
+      "i": 40,
+      "text": "guessing.",
+      "norm": "guessing",
+      "start": 17.77,
+      "end": 18.29,
+      "section": "nomore",
+      "sentence": 6,
+      "conf": 0.8
+    },
+    {
+      "i": 41,
+      "text": "No",
+      "norm": "no",
+      "start": 18.6,
+      "end": 18.86,
+      "section": "nomore",
+      "sentence": 7,
+      "conf": 1
+    },
+    {
+      "i": 42,
+      "text": "more",
+      "norm": "more",
+      "start": 18.87,
+      "end": 19.08,
+      "section": "nomore",
+      "sentence": 7,
+      "conf": 0.79
+    },
+    {
+      "i": 43,
+      "text": "stale",
+      "norm": "stale",
+      "start": 19.09,
+      "end": 19.44,
+      "section": "nomore",
+      "sentence": 7,
+      "conf": 0.91
+    },
+    {
+      "i": 44,
+      "text": "reports.",
+      "norm": "reports",
+      "start": 19.45,
+      "end": 20.11,
+      "section": "nomore",
+      "sentence": 7,
+      "conf": 1
+    },
+    {
+      "i": 45,
+      "text": "Setup",
+      "norm": "setup",
+      "start": 20.68,
+      "end": 21.08,
+      "section": "setup",
+      "sentence": 8,
+      "conf": 1
+    },
+    {
+      "i": 46,
+      "text": "takes",
+      "norm": "takes",
+      "start": 21.09,
+      "end": 21.5,
+      "section": "setup",
+      "sentence": 8,
+      "conf": 1
+    },
+    {
+      "i": 47,
+      "text": "one",
+      "norm": "one",
+      "start": 21.51,
+      "end": 21.66,
+      "section": "setup",
+      "sentence": 8,
+      "conf": 1
+    },
+    {
+      "i": 48,
+      "text": "line",
+      "norm": "line",
+      "start": 21.67,
+      "end": 21.88,
+      "section": "setup",
+      "sentence": 8,
+      "conf": 1
+    },
+    {
+      "i": 49,
+      "text": "of",
+      "norm": "of",
+      "start": 21.89,
+      "end": 21.97,
+      "section": "setup",
+      "sentence": 8,
+      "conf": 1
+    },
+    {
+      "i": 50,
+      "text": "code.",
+      "norm": "code",
+      "start": 22,
+      "end": 22.51,
+      "section": "setup",
+      "sentence": 8,
+      "conf": 0.57
+    },
+    {
+      "i": 51,
+      "text": "Drop",
+      "norm": "drop",
+      "start": 22.81,
+      "end": 23.16,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.99
+    },
+    {
+      "i": 52,
+      "text": "in",
+      "norm": "in",
+      "start": 23.2,
+      "end": 23.34,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 1
+    },
+    {
+      "i": 53,
+      "text": "the",
+      "norm": "the",
+      "start": 23.35,
+      "end": 23.6,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 1
+    },
+    {
+      "i": 54,
+      "text": "SDK,",
+      "norm": "sdk",
+      "start": 23.61,
+      "end": 24.29,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.63
+    },
+    {
+      "i": 55,
+      "text": "and",
+      "norm": "and",
+      "start": 24.6,
+      "end": 24.78,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.94
+    },
+    {
+      "i": 56,
+      "text": "events",
+      "norm": "events",
+      "start": 24.79,
+      "end": 25.1,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.96
+    },
+    {
+      "i": 57,
+      "text": "start",
+      "norm": "start",
+      "start": 25.11,
+      "end": 25.44,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.99
+    },
+    {
+      "i": 58,
+      "text": "streaming",
+      "norm": "streaming",
+      "start": 25.45,
+      "end": 26,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.9
+    },
+    {
+      "i": 59,
+      "text": "in",
+      "norm": "in",
+      "start": 26.01,
+      "end": 26.12,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.94
+    },
+    {
+      "i": 60,
+      "text": "milliseconds.",
+      "norm": "milliseconds",
+      "start": 26.13,
+      "end": 26.9,
+      "section": "setup",
+      "sentence": 9,
+      "conf": 0.57
+    },
+    {
+      "i": 61,
+      "text": "Ask",
+      "norm": "ask",
+      "start": 27.47,
+      "end": 27.72,
+      "section": "ask",
+      "sentence": 10,
+      "conf": 1
+    },
+    {
+      "i": 62,
+      "text": "a",
+      "norm": "a",
+      "start": 27.73,
+      "end": 27.8,
+      "section": "ask",
+      "sentence": 10,
+      "conf": 1
+    },
+    {
+      "i": 63,
+      "text": "question",
+      "norm": "question",
+      "start": 27.81,
+      "end": 28.3,
+      "section": "ask",
+      "sentence": 10,
+      "conf": 1
+    },
+    {
+      "i": 64,
+      "text": "in",
+      "norm": "in",
+      "start": 28.31,
+      "end": 28.46,
+      "section": "ask",
+      "sentence": 10,
+      "conf": 0.92
+    },
+    {
+      "i": 65,
+      "text": "plain",
+      "norm": "plain",
+      "start": 28.47,
+      "end": 28.84,
+      "section": "ask",
+      "sentence": 10,
+      "conf": 0.95
+    },
+    {
+      "i": 66,
+      "text": "English.",
+      "norm": "english",
+      "start": 28.85,
+      "end": 29.3,
+      "section": "ask",
+      "sentence": 10,
+      "conf": 0.88
+    },
+    {
+      "i": 67,
+      "text": "Orbit",
+      "norm": "orbit",
+      "start": 29.61,
+      "end": 30,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.95
+    },
+    {
+      "i": 68,
+      "text": "answers",
+      "norm": "answers",
+      "start": 30.01,
+      "end": 30.68,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.99
+    },
+    {
+      "i": 69,
+      "text": "with",
+      "norm": "with",
+      "start": 30.69,
+      "end": 30.84,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 1
+    },
+    {
+      "i": 70,
+      "text": "a",
+      "norm": "a",
+      "start": 30.85,
+      "end": 30.96,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 1
+    },
+    {
+      "i": 71,
+      "text": "chart",
+      "norm": "chart",
+      "start": 30.97,
+      "end": 31.34,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.82
+    },
+    {
+      "i": 72,
+      "text": "you",
+      "norm": "you",
+      "start": 31.49,
+      "end": 31.6,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.8
+    },
+    {
+      "i": 73,
+      "text": "can",
+      "norm": "can",
+      "start": 31.61,
+      "end": 31.8,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.99
+    },
+    {
+      "i": 74,
+      "text": "share",
+      "norm": "share",
+      "start": 31.81,
+      "end": 32.07,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 1
+    },
+    {
+      "i": 75,
+      "text": "with",
+      "norm": "with",
+      "start": 32.08,
+      "end": 32.21,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 1
+    },
+    {
+      "i": 76,
+      "text": "your",
+      "norm": "your",
+      "start": 32.22,
+      "end": 32.37,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.88
+    },
+    {
+      "i": 77,
+      "text": "team.",
+      "norm": "team",
+      "start": 32.38,
+      "end": 32.79,
+      "section": "ask",
+      "sentence": 11,
+      "conf": 0.52
+    },
+    {
+      "i": 78,
+      "text": "Teams",
+      "norm": "teams",
+      "start": 33.35,
+      "end": 33.77,
+      "section": "results",
+      "sentence": 12,
+      "conf": 0.99
+    },
+    {
+      "i": 79,
+      "text": "on",
+      "norm": "on",
+      "start": 33.78,
+      "end": 33.97,
+      "section": "results",
+      "sentence": 12,
+      "conf": 1
+    },
+    {
+      "i": 80,
+      "text": "Orbit",
+      "norm": "orbit",
+      "start": 33.98,
+      "end": 34.29,
+      "section": "results",
+      "sentence": 12,
+      "conf": 0.99
+    },
+    {
+      "i": 81,
+      "text": "ship",
+      "norm": "ship",
+      "start": 34.3,
+      "end": 34.57,
+      "section": "results",
+      "sentence": 12,
+      "conf": 1
+    },
+    {
+      "i": 82,
+      "text": "40%",
+      "norm": "40",
+      "start": 34.58,
+      "end": 35.25,
+      "section": "results",
+      "sentence": 12,
+      "conf": 1
+    },
+    {
+      "i": 83,
+      "text": "faster,",
+      "norm": "faster",
+      "start": 35.26,
+      "end": 35.76,
+      "section": "results",
+      "sentence": 12,
+      "conf": 0.93
+    },
+    {
+      "i": 84,
+      "text": "with",
+      "norm": "with",
+      "start": 36.09,
+      "end": 36.33,
+      "section": "results",
+      "sentence": 12,
+      "conf": 1
+    },
+    {
+      "i": 85,
+      "text": "3×",
+      "norm": "3",
+      "start": 36.34,
+      "end": 37.05,
+      "section": "results",
+      "sentence": 12,
+      "conf": 1
+    },
+    {
+      "i": 86,
+      "text": "fewer",
+      "norm": "fewer",
+      "start": 37.06,
+      "end": 37.45,
+      "section": "results",
+      "sentence": 12,
+      "conf": 0.86
+    },
+    {
+      "i": 87,
+      "text": "rollbacks.",
+      "norm": "rollbacks",
+      "start": 37.46,
+      "end": 38.16,
+      "section": "results",
+      "sentence": 12,
+      "conf": 0.91
+    },
+    {
+      "i": 88,
+      "text": "Funnels.",
+      "norm": "funnels",
+      "start": 38.74,
+      "end": 39.43,
+      "section": "everything",
+      "sentence": 13,
+      "conf": 0.98
+    },
+    {
+      "i": 89,
+      "text": "Retention.",
+      "norm": "retention",
+      "start": 39.73,
+      "end": 40.53,
+      "section": "everything",
+      "sentence": 14,
+      "conf": 0.68
+    },
+    {
+      "i": 90,
+      "text": "Cohorts.",
+      "norm": "cohorts",
+      "start": 40.84,
+      "end": 41.61,
+      "section": "everything",
+      "sentence": 15,
+      "conf": 0.87
+    },
+    {
+      "i": 91,
+      "text": "Alerts.",
+      "norm": "alerts",
+      "start": 41.91,
+      "end": 42.61,
+      "section": "everything",
+      "sentence": 16,
+      "conf": 0.98
+    },
+    {
+      "i": 92,
+      "text": "Orbit.",
+      "norm": "orbit",
+      "start": 43.2,
+      "end": 43.8,
+      "section": "cta",
+      "sentence": 17,
+      "conf": 0.99
+    },
+    {
+      "i": 93,
+      "text": "See",
+      "norm": "see",
+      "start": 44.11,
+      "end": 44.31,
+      "section": "cta",
+      "sentence": 18,
+      "conf": 1
+    },
+    {
+      "i": 94,
+      "text": "your",
+      "norm": "your",
+      "start": 44.32,
+      "end": 44.51,
+      "section": "cta",
+      "sentence": 18,
+      "conf": 1
+    },
+    {
+      "i": 95,
+      "text": "product",
+      "norm": "product",
+      "start": 44.52,
+      "end": 45.01,
+      "section": "cta",
+      "sentence": 18,
+      "conf": 1
+    },
+    {
+      "i": 96,
+      "text": "clearly.",
+      "norm": "clearly",
+      "start": 45.02,
+      "end": 45.52,
+      "section": "cta",
+      "sentence": 18,
+      "conf": 1
+    },
+    {
+      "i": 97,
+      "text": "Start",
+      "norm": "start",
+      "start": 45.83,
+      "end": 46.23,
+      "section": "cta",
+      "sentence": 19,
+      "conf": 1
+    },
+    {
+      "i": 98,
+      "text": "free",
+      "norm": "free",
+      "start": 46.24,
+      "end": 46.65,
+      "section": "cta",
+      "sentence": 19,
+      "conf": 1
+    },
+    {
+      "i": 99,
+      "text": "at",
+      "norm": "at",
+      "start": 46.66,
+      "end": 46.83,
+      "section": "cta",
+      "sentence": 19,
+      "conf": 0.52
+    },
+    {
+      "i": 100,
+      "text": "orbit.dev.",
+      "norm": "orbitdev",
+      "start": 46.84,
+      "end": 47.82,
+      "section": "cta",
+      "sentence": 19,
+      "conf": 0.69
+    }
+  ],
+  "sentences": [
+    {
+      "i": 0,
+      "text": "Your product ships every week.",
+      "start": 0.15,
+      "end": 1.71,
+      "section": "hook",
+      "first": 0,
+      "last": 4
+    },
+    {
+      "i": 1,
+      "text": "But your dashboards are always one step behind.",
+      "start": 2.12,
+      "end": 4.93,
+      "section": "hook",
+      "first": 5,
+      "last": 12
+    },
+    {
+      "i": 2,
+      "text": "Meet Orbit.",
+      "start": 5.5,
+      "end": 6.35,
+      "section": "intro",
+      "first": 13,
+      "last": 14
+    },
+    {
+      "i": 3,
+      "text": "Real-time product analytics that keeps up with your team.",
+      "start": 6.66,
+      "end": 10.21,
+      "section": "intro",
+      "first": 15,
+      "last": 23
+    },
+    {
+      "i": 4,
+      "text": "Every event, every funnel, every user journey, live in one workspace.",
+      "start": 10.77,
+      "end": 15.32,
+      "section": "workspace",
+      "first": 24,
+      "last": 34
+    },
+    {
+      "i": 5,
+      "text": "No more waiting.",
+      "start": 15.9,
+      "end": 16.89,
+      "section": "nomore",
+      "first": 35,
+      "last": 37
+    },
+    {
+      "i": 6,
+      "text": "No more guessing.",
+      "start": 17.22,
+      "end": 18.29,
+      "section": "nomore",
+      "first": 38,
+      "last": 40
+    },
+    {
+      "i": 7,
+      "text": "No more stale reports.",
+      "start": 18.6,
+      "end": 20.11,
+      "section": "nomore",
+      "first": 41,
+      "last": 44
+    },
+    {
+      "i": 8,
+      "text": "Setup takes one line of code.",
+      "start": 20.68,
+      "end": 22.51,
+      "section": "setup",
+      "first": 45,
+      "last": 50
+    },
+    {
+      "i": 9,
+      "text": "Drop in the SDK, and events start streaming in milliseconds.",
+      "start": 22.81,
+      "end": 26.9,
+      "section": "setup",
+      "first": 51,
+      "last": 60
+    },
+    {
+      "i": 10,
+      "text": "Ask a question in plain English.",
+      "start": 27.47,
+      "end": 29.3,
+      "section": "ask",
+      "first": 61,
+      "last": 66
+    },
+    {
+      "i": 11,
+      "text": "Orbit answers with a chart you can share with your team.",
+      "start": 29.61,
+      "end": 32.79,
+      "section": "ask",
+      "first": 67,
+      "last": 77
+    },
+    {
+      "i": 12,
+      "text": "Teams on Orbit ship 40% faster, with 3× fewer rollbacks.",
+      "start": 33.35,
+      "end": 38.16,
+      "section": "results",
+      "first": 78,
+      "last": 87
+    },
+    {
+      "i": 13,
+      "text": "Funnels.",
+      "start": 38.74,
+      "end": 39.43,
+      "section": "everything",
+      "first": 88,
+      "last": 88
+    },
+    {
+      "i": 14,
+      "text": "Retention.",
+      "start": 39.73,
+      "end": 40.53,
+      "section": "everything",
+      "first": 89,
+      "last": 89
+    },
+    {
+      "i": 15,
+      "text": "Cohorts.",
+      "start": 40.84,
+      "end": 41.61,
+      "section": "everything",
+      "first": 90,
+      "last": 90
+    },
+    {
+      "i": 16,
+      "text": "Alerts.",
+      "start": 41.91,
+      "end": 42.61,
+      "section": "everything",
+      "first": 91,
+      "last": 91
+    },
+    {
+      "i": 17,
+      "text": "Orbit.",
+      "start": 43.2,
+      "end": 43.8,
+      "section": "cta",
+      "first": 92,
+      "last": 92
+    },
+    {
+      "i": 18,
+      "text": "See your product clearly.",
+      "start": 44.11,
+      "end": 45.52,
+      "section": "cta",
+      "first": 93,
+      "last": 96
+    },
+    {
+      "i": 19,
+      "text": "Start free at orbit.dev.",
+      "start": 45.83,
+      "end": 47.82,
+      "section": "cta",
+      "first": 97,
+      "last": 100
+    }
+  ],
+  "sections": [
+    {
+      "id": "hook",
+      "title": "Hook",
+      "start": 0.15,
+      "end": 4.93,
+      "first": 0,
+      "last": 12
+    },
+    {
+      "id": "intro",
+      "title": "Meet Orbit",
+      "start": 5.5,
+      "end": 10.21,
+      "first": 13,
+      "last": 23
+    },
+    {
+      "id": "workspace",
+      "title": "Live workspace",
+      "start": 10.77,
+      "end": 15.32,
+      "first": 24,
+      "last": 34
+    },
+    {
+      "id": "nomore",
+      "title": "No more",
+      "start": 15.9,
+      "end": 20.11,
+      "first": 35,
+      "last": 44
+    },
+    {
+      "id": "setup",
+      "title": "Setup",
+      "start": 20.68,
+      "end": 26.9,
+      "first": 45,
+      "last": 60
+    },
+    {
+      "id": "ask",
+      "title": "Ask anything",
+      "start": 27.47,
+      "end": 32.79,
+      "first": 61,
+      "last": 77
+    },
+    {
+      "id": "results",
+      "title": "Results",
+      "start": 33.35,
+      "end": 38.16,
+      "first": 78,
+      "last": 87
+    },
+    {
+      "id": "everything",
+      "title": "Everything",
+      "start": 38.74,
+      "end": 42.61,
+      "first": 88,
+      "last": 91
+    },
+    {
+      "id": "cta",
+      "title": "Close",
+      "start": 43.2,
+      "end": 47.82,
+      "first": 92,
+      "last": 100
+    }
+  ],
+  "audio": "assets/audio/voiceover.wav",
+  "audioDuration": 48.225
+}
