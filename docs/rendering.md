@@ -130,7 +130,7 @@ The cost of a frame is roughly *(Canvas 2D drawing + layer uploads) × samples +
 
 | Lever | Effect |
 | --- | --- |
-| `--draft` | ~5–10× faster than final |
+| `--draft` | ~10× faster than final (demo: 3 min vs. 37 min) |
 | `--scene`, `--from/--to` | Render only what you are working on |
 | `cache: 'key'` on static layers | Draw once instead of every sample |
 | Fewer / smaller blurred layers | Blur is the most expensive GPU operation in SwiftShader |

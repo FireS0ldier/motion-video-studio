@@ -51,8 +51,8 @@ npm run setup                 # installs a headless Chromium if needed, checks f
 
 npx mvs dev orbit-launch      # live preview → http://localhost:5173/?project=orbit-launch
 npx mvs still orbit-launch --t 12.5,24     # PNG stills → out/orbit-launch/stills/
-npx mvs render orbit-launch --draft        # fast draft MP4 (~1-3 min)
-npx mvs render orbit-launch                # final 1080p60 with motion blur
+npx mvs render orbit-launch --draft        # fast draft MP4 (~3 min on a 4-core VM)
+npx mvs render orbit-launch                # final 1080p60 with motion blur (~40 min without GPU)
 ```
 
 Preview keys: `space` play/pause (with audio) · `←/→` ±1 s (`shift` ±5 s) · `,` `.` one frame · `[` `]` previous/next scene · `l` loop scene · `g` safe areas · `m` motion blur · `q` resolution · `s` save still · `w` warnings · `h` hide UI · `?` help. URL: `?t=35`, `?scene=setup`.
@@ -201,13 +201,17 @@ tests/                  unit (vitest) and end-to-end render tests
 
 ## Performance
 
-Measured on a 4-core cloud VM **without GPU** (SwiftShader), demo project:
+Measured on a 4-core cloud VM **without GPU** (SwiftShader, 2 render workers), demo project `orbit-launch` (50.5 s):
 
-| Mode | Resolution | Speed |
+| Mode | Output | Measured |
 | --- | --- | --- |
-| Preview frame | ~70% of 1080p | 10–30 ms/frame |
-| Draft (`--draft`) | 960×540 @ 30 fps, 1 sample | ~8–17 frames/s (2 workers) |
-| Final | 1920×1080 @ 60 fps, adaptive motion blur | ~1.5–3 frames/s (2 workers) |
+| Preview | ~40–70 % of 1080p in the browser | 10–60 ms per frame |
+| Still (`mvs still`) | 1920×1080 PNG, motion blur | 0.05–0.9 s per frame (+ a few seconds browser start) |
+| Draft (`--draft`) | 960×540 @ 30 fps, 1 sample, 2.7 MB | 1,516 frames in 3 min 16 s (≈ 8 frames/s) |
+| Final | 1920×1080 @ 60 fps, adaptive motion blur (avg 2.4 samples), 19.6 Mb/s | 3,031 frames in 37 min (≈ 1.4 frames/s) |
+| 4K still (`--scale 2`) | 3840×2160 PNG | ~7 s per frame |
+
+The final MP4 measures −14.3 LUFS integrated and −1.1 dBTP true peak (ffmpeg `ebur128`). On GitHub's hosted runners the whole end-to-end test suite (stills, determinism, a draft video rendered twice, checks) takes under a minute.
 
 Static layers can be cached (`g.layer({ cache: 'key' })`), motion blur only adds samples where things move, glitch transitions skip motion blur. With a real GPU (`MVS_GL=gpu`, or Chrome on macOS/Windows) the GPU stages are many times faster. See [docs/rendering.md](docs/rendering.md).
 
