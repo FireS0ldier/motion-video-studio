@@ -86,7 +86,7 @@ Guidelines:
 Pick one:
 
 1. **A recording or TTS service file** (best quality): save as `assets/audio/voiceover.wav` (or `.mp3/.m4a/.flac/.ogg`). It is picked up automatically.
-2. **Local TTS:** `npx mvs voice <id> --voice am_michael` (Kokoro-82M, CPU, free, Apache-2.0). Good for drafts and demos. Voices: `--list`. English, Spanish, French, Italian, Portuguese, Hindi, Japanese, Chinese; no German.
+2. **Local TTS:** `npx mvs voice <id>` (CPU, free). Kokoro-82M for English, Spanish, French, Italian, Portuguese, Hindi, Japanese, Chinese (`--voice am_michael`); Piper for German (`--voice de_DE-thorsten-high`, also writes the word timing). Good for drafts and demos. Voices: `--list`. Details: [audio.md](audio.md#german-voices-piper).
 3. **None yet:** skip. `mvs align --estimate` (and the preview, automatically) estimate the timing from the script, so you can build the whole video first and drop the voice in later.
 
 To start the voice after a short visual intro, set it explicitly in `project.ts`:
@@ -103,7 +103,8 @@ npx mvs analyze <id>        # loudness envelope, pauses, music beats → data/au
 ```
 
 - English: the default CTC aligner (wav2vec2, CPU) is accurate to ~15–30 ms per word.
-- Other languages: `npx mvs align <id> --engine whisperx --language de`.
+- A voice from `mvs voice` with Piper (German): the timing is already written (engine `tts`); `mvs align` keeps reusing it.
+- Recorded voiceovers in other languages: `npx mvs align <id> --engine whisperx --language de`.
 - Without Python/uv: the heuristic engine (voice activity) is sentence-accurate; word starts are approximated.
 - The output tells you how many words matched and the confidence. `mvs info <id>` shows the timing source; `mvs check` flags a stale timing file (script changed after aligning).
 

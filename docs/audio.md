@@ -14,8 +14,39 @@ All of it runs locally on the CPU. Nothing needs a GPU or a paid service.
 **Sources**, in order of quality:
 
 1. A human recording or a TTS service export (ElevenLabs, …). 48 kHz WAV is ideal; MP3/M4A/FLAC/OGG work.
-2. `npx mvs voice <id>` — [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) via `kokoro-onnx`, CPU, Apache-2.0, ~120 MB downloaded once into `.cache/models/kokoro`. Reads `script.md` sentence by sentence with natural pauses (`sentencePause`, `sectionPause`, `[pause]`). Options: `--voice am_michael` (`--list` for all), `--speed 1.0`, `--lang en-us`. No German voice.
+2. `npx mvs voice <id>` — local TTS on the CPU, free, no account. It reads `script.md` sentence by sentence with natural pauses (`sentencePause`, `sectionPause`, `[pause]`). The engine follows the script language:
+   - **Kokoro** ([Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) via `kokoro-onnx`, Apache-2.0, ~120 MB once): English, Spanish, French, Italian, Portuguese, Hindi, Japanese, Chinese. `--voice am_michael`, `--lang en-us`.
+   - **Piper** ([piper-tts](https://github.com/OHF-Voice/piper1-gpl), GPL-3.0, run through uv and not bundled): **German** and many other languages. `--voice de_DE-thorsten-high` (default for `language: de`). It also writes the word timing (see below).
+   Common options: `--speed 1.0`, `--list` (all voices), `--engine kokoro|piper` to force one.
 3. Nothing: timing is estimated from the script until a voice exists.
+
+### German voices (Piper)
+
+```bash
+npx mvs new mein-video --language de     # German starter: script, scene texts, voice
+npx mvs voice mein-video                 # voiceover.wav + data/timing.json in one step
+npx mvs voice mein-video --voice de_DE-kerstin-low
+npx mvs voice mein-video --voice de_DE-thorsten_emotional-medium --speaker surprised
+npx mvs voice mein-video --seed 2        # another take of the same script
+```
+
+| Voice | | Recordings | Fine-tuned from | Notes |
+| --- | --- | --- | --- | --- |
+| `de_DE-thorsten-high` | male | CC0 | `en_US-lessac-high` | Default. Clearest; 114 MB |
+| `de_DE-thorsten-medium` | male | CC0 | `en_US-lessac-medium` | Same speaker, ~2× faster to generate; 63 MB |
+| `de_DE-thorsten_emotional-medium` | male | CC0 | `thorsten-medium` | `--speaker neutral, amused, angry, disgusted, drunk, sleepy, surprised, whisper` |
+| `de_DE-kerstin-low` | female | CC0 | `en_US-ryan-low` | 16 kHz; 63 MB |
+
+> **License note:** the German recordings are CC0, but every German Piper model was fine-tuned from an English base voice whose training data has non-commercial terms (Blizzard 2013 Lessac data; RyanSpeech, CC BY-NC-SA 4.0). Whether the generated audio may be used commercially is therefore not clearly licensed. Use these voices for drafts, placeholders, internal and demo videos; for a commercial release, use a recorded voiceover or a TTS service with a commercial license, or get legal advice.
+
+The voices are checksum-pinned. Any other id from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) works too (downloaded from the same pinned revision without a checksum; check its `MODEL_CARD`). `de_DE-mls-medium` is not listed: its speakers read very slowly and a German Whisper transcription lost whole passages. Measured on the German starter script: word error rate of a German Whisper transcription 7–14 % for the listed voices (errors mostly on one-word sentences and brand names), generation faster than real time on a 4-core CPU.
+
+`npx mvs voice --list --voice de_DE-thorsten_emotional-medium` lists the speakers of a voice.
+
+- **Same script + same `--seed` → the same WAV** on the same platform (the model's sampling noise is seeded). Change the seed (`--seed`, or `seed:` in the script front matter) for another take; `--out assets/audio/take2.wav` keeps the current voiceover and its timing untouched.
+- **Word timing:** the report goes to `data/voice.json` (commit it with the audio); `mvs voice` writes `data/timing.json` from it, and `mvs align` reuses it while audio and script are unchanged. Each script word is phonemized on its own and aligned with the phonemes actually spoken, so words the TTS merges or splits ("es ist", "iPhone") still get exact times.
+- Numbers, symbols, domains and common abbreviations are written out before synthesis (`40 %` → „vierzig Prozent“, `z.B.` → „zum Beispiel“, `acme.de` → „acme punkt de“), see [script-format.md](script-format.md#numbers-and-symbols).
+- Voice settings can live in the script front matter: `voice:`, `speaker:`, `speed:`, `seed:`.
 
 **Placement:** `assets/audio/voiceover.*` is used automatically. To delay the voice (a visual intro before the first word), declare it:
 
@@ -37,11 +68,14 @@ npx mvs align <id> --estimate --wpm 155              # no audio yet
 
 | Engine | How | Accuracy | Needs |
 | --- | --- | --- | --- |
+| `tts` | Word times reported by the TTS itself (Piper phoneme durations), from `data/voice.json` written by `mvs voice` | Exact for the generated audio: sentence starts within ~30 ms of the acoustic onset on the German starter | A voiceover from `mvs voice` with a Piper voice |
 | `ctc` (default for English) | Forced alignment of the known script with wav2vec2-base-960h (ONNX, int8) and a CTC Viterbi path | ~15 ms median vs. ground truth on the demo | uv (or Python ≥ 3.10); ~95 MB model, downloaded once, pinned by checksum |
-| `whisperx` | WhisperX ASR + phoneme alignment, words mapped onto the script with sequence alignment | ~20 ms median vs. CTC on the demo; multilingual | uv; a large first download (PyTorch, WhisperX, the Whisper model; `--model small` default) |
+| `whisperx` | WhisperX ASR + phoneme alignment, words mapped onto the script with sequence alignment | ~20 ms median vs. CTC on the English demo; on German speech ~0.1 s late at sentence starts; multilingual | uv; a large first download (PyTorch, WhisperX, the Whisper model, a wav2vec2 model per language; `--model small` default) |
 | `heuristic` | Voice-activity detection: sentences mapped to speech regions, words spread by length inside | Sentence-accurate, words approximate | Nothing |
 | `estimate` | Speaking rate from the text (no audio) | Rough | Nothing |
-| `auto` | `ctc` for English if uv/Python is available, else `heuristic`; `estimate` without audio | — | — |
+| `auto` | `tts` when the voiceover is still the one `mvs voice` made with Piper for this script; else `ctc` for English if uv/Python is available, else `heuristic`; `estimate` without audio | — | — |
+
+For recorded German voiceovers use `--engine whisperx --language de`.
 
 Python tools run through [uv](https://docs.astral.sh/uv/) in cached, isolated environments (`uv run --with …`): nothing is installed globally and the Node install stays lean. Models are cached in `.cache/models/` (git-ignored) and verified by SHA-256.
 

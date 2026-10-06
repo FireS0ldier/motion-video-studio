@@ -33,13 +33,13 @@ Never commit secrets. Settings go in `.env` (git-ignored; see `.env.example`).
 Follow these steps in order. Commands are run from the repo root.
 
 1. **Check the machine:** `npx mvs doctor` (first time: `npm install && npm run setup`).
-2. **Scaffold:** `npx mvs new <id> --title "Product Launch" [--format landscape|vertical|square]`.
+2. **Scaffold:** `npx mvs new <id> --title "Product Launch" [--format landscape|vertical|square] [--language de]` (German: starter with German script, texts and voice).
 3. **Collect inputs** from the user (ask if missing): product name + one-line pitch, target audience, key features (3–5), proof points/numbers, call to action + URL, brand colors/fonts/logo, screenshots/recordings, voiceover file (or permission to generate one), desired length (30–90 s is typical) and format.
 4. **Write `script.md`.** Sections (`## Hook {#hook}`) become scene boundaries. ~150 words per minute. One idea per sentence. Use `{display|spoken}` for numbers/URLs/acronyms (`{40%|forty percent}`, `{orbit.dev|orbit dot dev}`). See `docs/script-format.md`.
 5. **Brand:** edit `brand.ts` (colors, `logo: { mark: 'assets/brand/logo.svg' }`, motion preset `smooth|snappy|bouncy|cinematic`). Fonts: bundled Inter/JetBrains Mono/Instrument Serif, or add woff2 files (see `docs/scene-api.md#fonts`).
 6. **Assets:** put files into `projects/<id>/assets/`: `screens/` (PNG, 2× resolution ideal), `recordings/` (MP4/MOV), `brand/` (SVG logo), `audio/voiceover.wav` (auto-detected), `images/`. No real screenshots? Build an HTML mock and capture it (pattern: `projects/orbit-launch/assets-src/make-assets.ts`) or draw UI with the kit.
-7. **Voiceover:** user file → `assets/audio/voiceover.wav`. Or `npx mvs voice <id>` (local Kokoro TTS, English and some other languages, no German). If none yet: skip; timing is estimated from the script.
-8. **Timing:** `npx mvs align <id>` (CTC, English; `--engine whisperx --language de` for other languages; `--estimate` without audio). Then `npx mvs analyze <id>`.
+7. **Voiceover:** user file → `assets/audio/voiceover.wav`. Or `npx mvs voice <id>` (local TTS: Kokoro for English and 7 more languages; Piper for German (`language: de`), which also writes `data/timing.json` so step 8's `align` is not needed). If none yet: skip; timing is estimated from the script.
+8. **Timing:** `npx mvs align <id>` (auto: TTS timing after a Piper voice, CTC for English; `--engine whisperx --language de` for recorded non-English voices; `--estimate` without audio). Then `npx mvs analyze <id>`.
 9. **Scenes + timeline:** start from the template's `scenes/index.ts`. Use templates (`templates.showcase`, `kinetic`, `features`, `stats`, `code`, `phoneShowcase`, `cta`, …) and write custom scenes for the special moments. Anchor scene starts with `section('id')` / `cut('phrase')`. Choose transitions with intent (see §7).
 10. **Preview:** `npx mvs dev <id>` (if you cannot see a browser, use stills and the review pack instead).
 11. **Validate:** `npx mvs check <id>` → fix **every** error and warning you can.
@@ -53,7 +53,7 @@ Follow these steps in order. Commands are run from the repo root.
 npx mvs doctor                         environment check
 npx mvs new <id> [--format vertical]   new project
 npx mvs dev <id>                       preview (http://localhost:5173/?project=<id>&t=12)
-npx mvs voice <id> [--voice af_heart]  TTS voiceover → assets/audio/voiceover.wav
+npx mvs voice <id> [--voice af_heart]  TTS voiceover → assets/audio/voiceover.wav (German: Piper + timing)
 npx mvs align <id> [--engine ...]      word timing → data/timing.json
 npx mvs analyze <id>                   audio features → data/audio.json
 npx mvs info <id> [--json]             scenes / timing / cues as the renderer sees them

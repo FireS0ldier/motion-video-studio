@@ -28,6 +28,8 @@ export interface ScriptWord {
   norm: string
   /** Spoken tokens (normalized) used for forced alignment. */
   spoken: string[]
+  /** What the TTS is asked to say for this word (without trailing punctuation). */
+  tts?: string
 }
 
 export interface ScriptSentence {
@@ -58,7 +60,10 @@ export interface FlatScriptWord extends ScriptWord {
   sentence: number
 }
 
-const ABBREVIATIONS = /\b(e\.g|i\.e|vs|etc|mr|mrs|ms|dr|prof|inc|ltd|z\.b|bzw|ca|usw|d\.h)\.$/i
+const ABBREVIATIONS = /\b(e\.g|i\.e|vs|etc|mr|mrs|ms|dr|prof|inc|ltd|z\.b|d\.h|u\.a|u\.u|z\.t|bzw|bspw|ca|usw|inkl|zzgl|ggf|evtl|vgl|nr|mio|mrd|tsd)\.$/i
+/** Abbreviations that are also words when capitalized ("Sog." ends a sentence, "sog." does not). */
+const ABBREVIATIONS_LOWER = /(?:^|[^\p{L}])sog\.$/u
+const DE_MONTHS = 'januar februar märz april mai juni juli august september oktober november dezember'.split(' ')
 
 function parseFrontMatter(src: string): { meta: Record<string, string | number | boolean>; body: string } {
   const meta: Record<string, string | number | boolean> = {}
@@ -75,7 +80,7 @@ function parseFrontMatter(src: string): { meta: Record<string, string | number |
   return { meta, body: src.slice(m[0].length) }
 }
 
-function splitSentences(text: string): string[] {
+function splitSentences(text: string, language = 'en'): string[] {
   const out: string[] = []
   const re = /[^.!?…]*(?:[.!?…]+["'”’)\]]*|$)/g
   let buf = ''
@@ -87,7 +92,12 @@ function splitSentences(text: string): string[] {
     // keep abbreviations and things like "orbit.dev" or "3.5" together
     const next = text[(m.index ?? 0) + piece.length]
     if (next !== undefined && !/\s/.test(next)) continue
-    if (ABBREVIATIONS.test(trimmed)) continue
+    if (ABBREVIATIONS.test(trimmed) || ABBREVIATIONS_LOWER.test(trimmed)) continue
+    // German dates: "am 1. Oktober" is one sentence
+    if (numberLanguage(language) === 'de' && /(?:^|\s)\d{1,2}\.$/.test(trimmed)) {
+      const following = /^\s*(\p{L}+)/u.exec(text.slice((m.index ?? 0) + piece.length))?.[1]?.toLowerCase()
+      if (following && DE_MONTHS.includes(following)) continue
+    }
     if (trimmed) out.push(trimmed)
     buf = ''
   }
@@ -127,11 +137,27 @@ function yearToWords(n: number): string[] {
   return [...intToWords(hi), ...(lo < 10 ? ['oh', ONES[lo]!] : intToWords(lo))]
 }
 
-/** Expand a token containing digits to spoken English words; null if not a numeric token. */
-export function expandNumberToken(token: string): string[] | null {
+/** Languages whose numbers are expanded to words automatically (others need `{display|spoken}`). */
+export function numberLanguage(language: string): 'en' | 'de' | null {
+  const l = language.toLowerCase()
+  if (l.startsWith('en')) return 'en'
+  if (l.startsWith('de')) return 'de'
+  return null
+}
+
+/**
+ * Expand a token containing digits to spoken words; null if not a numeric token.
+ * `language` selects English (default) or German rules.
+ */
+export function expandNumberToken(token: string, language = 'en'): string[] | null {
+  if (numberLanguage(language) === 'de') return expandNumberTokenDe(token)
   const t = token.replace(/[’]/g, "'")
   if (!/\d/.test(t)) return null
   let m: RegExpExecArray | null
+  if ((m = /^([+\-−])(\d.*)$/.exec(t))) {
+    const rest = expandNumberToken(m[2]!, 'en')
+    return rest ? [m[1] === '+' ? 'plus' : 'minus', ...rest] : null
+  }
   if ((m = /^\$(\d[\d,]*(?:\.\d+)?)([kmb])?$/i.exec(t))) return [...numberWords(m[1]!, m[2]), 'dollars']
   if ((m = /^(\d[\d,]*(?:\.\d+)?)%$/.exec(t))) return [...numberWords(m[1]!), 'percent']
   if ((m = /^(\d[\d,]*(?:\.\d+)?)[x×]$/i.exec(t))) return [...numberWords(m[1]!), 'times']
@@ -146,7 +172,7 @@ export function expandNumberToken(token: string): string[] | null {
   if (/^(1[1-9]|20)\d\d$/.test(t)) return yearToWords(Number(t))
   if ((m = /^\d[\d,]*(?:\.\d+)?$/.exec(t))) return numberWords(t)
   // mixed letters/digits: "v2", "M3" -> letters + spoken digits
-  const parts = t.match(/\d+|[^\d\W]+/gu)
+  const parts = t.match(/\d+|\p{L}+/gu)
   if (!parts) return null
   return parts.flatMap((p) => (/^\d+$/.test(p) ? intToWords(Number(p)) : [normWord(p)])).filter(Boolean)
 }
@@ -163,9 +189,181 @@ function numberWords(num: string, suffix?: string): string[] {
   return words
 }
 
+// ---------------------------------------------------------------- numbers -> words (German)
+
+const DE_ONES = ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn', 'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn']
+const DE_TENS = ['', '', 'zwanzig', 'dreißig', 'vierzig', 'fünfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig']
+
+/** German cardinal below one million as one compound word ("einundzwanzig", "zweitausendsechsundzwanzig"). */
+function deCompound(n: number): string {
+  if (n < 20) return DE_ONES[n]!
+  if (n < 100) {
+    const ones = n % 10
+    const tens = DE_TENS[Math.floor(n / 10)]!
+    return ones ? (ones === 1 ? 'ein' : DE_ONES[ones]!) + 'und' + tens : tens
+  }
+  if (n < 1000) {
+    const h = Math.floor(n / 100)
+    const rest = n % 100
+    return (h === 1 ? '' : deCompound(h)) + 'hundert' + (rest ? deCompound(rest) : '')
+  }
+  const th = Math.floor(n / 1000)
+  const rest = n % 1000
+  // "eins" becomes "ein" in front of "tausend": einundzwanzigtausend, hunderteintausend
+  return (th === 1 ? '' : deCompound(th).replace(/eins$/, 'ein')) + 'tausend' + (rest ? deCompound(rest) : '')
+}
+
+/** German cardinal as spoken words: compounds below a million, "zwei Millionen" style above. */
+export function intToWordsDe(n: number): string[] {
+  if (!Number.isFinite(n)) return []
+  if (n < 0) return ['minus', ...intToWordsDe(-n)]
+  n = Math.floor(n)
+  const scales: Array<[number, string, string]> = [
+    [1e9, 'milliarde', 'milliarden'],
+    [1e6, 'million', 'millionen'],
+  ]
+  for (const [v, one, many] of scales) {
+    if (n >= v) {
+      const k = Math.floor(n / v)
+      const rest = n % v
+      return [...(k === 1 ? ['eine', one] : [...intToWordsDe(k), many]), ...(rest ? intToWordsDe(rest) : [])]
+    }
+  }
+  return [deCompound(n)]
+}
+
+function numberWordsDe(num: string, suffix?: string): string[] {
+  // German: "." groups thousands, "," is the decimal separator
+  const [int, frac] = num.replace(/\./g, '').split(',')
+  const n = Number(int)
+  const scale = suffix?.toLowerCase().replace(/\.$/, '')
+  if (!frac && scale === 'k' && n * 1000 < 1e6) return [deCompound(n * 1000)]
+  const words = intToWordsDe(n)
+  if (frac) words.push('komma', ...frac.split('').map((d) => DE_ONES[Number(d)]!))
+  if (scale === 'k') words.push('tausend')
+  if (scale === 'mio') words.push(n === 1 && !frac ? 'million' : 'millionen')
+  if (scale === 'mrd') words.push(n === 1 && !frac ? 'milliarde' : 'milliarden')
+  if (n === 1 && !frac && (scale === 'mio' || scale === 'mrd')) words[0] = 'eine'
+  return words
+}
+
+const DE_NUM = String.raw`(\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:,\d+)?)`
+
+/** Expand a token containing digits to spoken German words; null if not a numeric token. */
+export function expandNumberTokenDe(token: string): string[] | null {
+  const t = token.replace(/[’]/g, "'")
+  if (!/\d/.test(t)) return null
+  let m: RegExpExecArray | null
+  // +40%, -20 % → plus/minus …
+  if ((m = /^([+\-−])(\d.*)$/.exec(t))) {
+    const rest = expandNumberTokenDe(m[2]!)
+    return rest ? [m[1] === '+' ? 'plus' : 'minus', ...rest] : null
+  }
+  // dates (01.10.2026) are left to the TTS, which reads them as dates
+  if (/^\d{1,2}\.\d{1,2}\.(\d{2}|\d{4})$/.test(t)) return null
+  // times: 10:30 → zehn dreißig, 9:00 → neun
+  if ((m = /^(\d{1,2}):(\d{2})$/.exec(t))) {
+    const min = Number(m[2])
+    return [deCompound(Number(m[1])), ...(min ? [deCompound(min)] : [])]
+  }
+  // decades: 80er → achtziger, 1990er → neunzehnhundertneunziger
+  if ((m = /^(\d+)er(-\p{L}[\p{L}-]*)?$/u.exec(t))) {
+    const n = Number(m[1])
+    const base = /^1[1-9]\d\d$/.test(m[1]!) ? deCompound(Math.floor(n / 100)) + 'hundert' + (n % 100 ? deCompound(n % 100) : '') : n < 1e6 ? deCompound(n) : null
+    if (base) return [base + 'er' + (m[2] ?? '').toLowerCase()]
+  }
+  // 30-tägige → dreißigtägige (number + hyphenated suffix is one German word)
+  if ((m = /^(\d+)-(\p{L}[\p{L}-]*)$/u.exec(t)) && Number(m[1]) < 1e6) return [deCompound(Number(m[1])).replace(/eins$/, 'ein') + m[2]!.toLowerCase()]
+  if ((m = new RegExp(`^[€$]${DE_NUM}(k|mio\\.?|mrd\\.?)?$`, 'i').exec(t))) return [...numberWordsDe(m[1]!, m[2]), t.startsWith('$') ? 'dollar' : 'euro']
+  if ((m = new RegExp(`^${DE_NUM}(k|mio\\.?|mrd\\.?)?[€$]$`, 'i').exec(t))) return [...numberWordsDe(m[1]!, m[2]), t.endsWith('$') ? 'dollar' : 'euro']
+  if ((m = new RegExp(`^${DE_NUM}%$`).exec(t))) return [...numberWordsDe(m[1]!), 'prozent']
+  if ((m = new RegExp(`^${DE_NUM}[x×]$`, 'i').exec(t))) {
+    const words = numberWordsDe(m[1]!)
+    return words.length === 1 ? [words[0]!.replace(/eins$/, 'ein') + 'mal'] : [...words, 'mal']
+  }
+  if ((m = new RegExp(`^${DE_NUM}(k|mio\\.?|mrd\\.?)$`, 'i').exec(t))) return numberWordsDe(m[1]!, m[2])
+  if ((m = /^(\d+)\/(\d+)$/.exec(t))) return [...intToWordsDe(Number(m[1])), ...intToWordsDe(Number(m[2]))]
+  // 1100–1999 without separator reads as a year: neunzehnhundertneunundneunzig
+  if (/^1[1-9]\d\d$/.test(t)) {
+    const n = Number(t)
+    return [deCompound(Math.floor(n / 100)) + 'hundert' + (n % 100 ? deCompound(n % 100) : '')]
+  }
+  if (new RegExp(`^${DE_NUM}$`).test(t)) return numberWordsDe(t)
+  // versions and other dotted numbers that are not thousands: 3.5 → drei punkt fünf
+  if (/^\d+(\.\d+)+$/.test(t)) return t.split('.').flatMap((p, i) => [...(i ? ['punkt'] : []), ...intToWordsDe(Number(p))])
+  // mixed letters/digits: "v2", "Ü18" -> letters + spoken digits
+  const parts = t.match(/\d+|\p{L}+/gu)
+  if (!parts) return null
+  return parts.flatMap((p) => (/^\d+$/.test(p) ? intToWordsDe(Number(p)) : [p.toLowerCase()])).filter(Boolean)
+}
+
 const SYMBOL_WORDS: Record<string, Record<string, string[]>> = {
-  en: { '&': ['and'], '+': ['plus'], '@': ['at'] },
-  de: { '&': ['und'], '+': ['plus'], '@': ['at'] },
+  en: { '&': ['and'], '+': ['plus'], '@': ['at'], '%': ['percent'] },
+  de: { '&': ['und'], '+': ['plus'], '@': ['at'], '%': ['prozent'], '€': ['euro'] },
+}
+
+/** Common German abbreviations, spoken in full (keys: lowercase, without the final dot). Used only with their dot. */
+const DE_ABBREVIATIONS: Record<string, string[]> = {
+  'z.b': ['zum', 'beispiel'],
+  'd.h': ['das', 'heißt'],
+  'u.a': ['unter', 'anderem'],
+  'u.u': ['unter', 'umständen'],
+  'z.t': ['zum', 'teil'],
+  bspw: ['beispielsweise'],
+  zzgl: ['zuzüglich'],
+  evtl: ['eventuell'],
+  vgl: ['vergleiche'],
+  sog: ['sogenannt'],
+  bzw: ['beziehungsweise'],
+  ca: ['circa'],
+  usw: ['und', 'so', 'weiter'],
+  inkl: ['inklusive'],
+  ggf: ['gegebenenfalls'],
+  nr: ['nummer'],
+  dr: ['doktor'],
+  prof: ['professor'],
+  mio: ['millionen'],
+  mrd: ['milliarden'],
+  tsd: ['tausend'],
+}
+/** Abbreviations that are ordinary words when capitalized ("der Sog."). */
+const DE_LOWERCASE_ONLY = new Set(['sog'])
+
+const TLDS = new Set('com net org io dev app ai co de at ch eu uk us fr es it nl info shop tech cloud so xyz me tv gg'.split(' '))
+
+/** "acme.de" → acme punkt de, "orbit.dev" → orbit dot dev (domains are read out, not guessed by the TTS). */
+function domainWords(core: string, language: string): string[] | null {
+  const lang = numberLanguage(language)
+  if (!lang) return null
+  const labels = core.toLowerCase().split('.')
+  if (labels.length < 2 || !TLDS.has(labels[labels.length - 1]!)) return null
+  if (!labels.every((l) => /^[\p{L}\d][\p{L}\d-]*$/u.test(l)) || !/\p{L}/u.test(labels[0]!)) return null
+  const dot = lang === 'de' ? 'punkt' : 'dot'
+  const read = (l: string): string[] => (l === 'www' ? ['w', 'w', 'w'] : /\d/.test(l) ? (expandNumberToken(l, lang) ?? [l]) : l.split('-').filter(Boolean))
+  return labels.flatMap((l, i) => [...(i ? [dot] : []), ...read(l)])
+}
+
+type Special = { words: string[]; kind: 'symbol' | 'abbreviation' | 'domain' }
+
+/** Spoken words for a symbol, abbreviation or domain token, or null. */
+function specialWords(core: string, trail: string, language: string): Special | null {
+  const lang = language.slice(0, 2).toLowerCase()
+  const symbol = SYMBOL_WORDS[lang]?.[core]
+  if (symbol) return { words: symbol, kind: 'symbol' }
+  if (lang === 'de') {
+    const key = core.toLowerCase()
+    const words = DE_ABBREVIATIONS[key]
+    const dotted = core.includes('.') || trail.startsWith('.')
+    if (words && dotted && !(DE_LOWERCASE_ONLY.has(key) && core !== key)) return { words, kind: 'abbreviation' }
+  }
+  const domain = domainWords(core, language)
+  return domain ? { words: domain, kind: 'domain' } : null
+}
+
+/** German ordinal for dates, dative form: 1 → ersten, 3 → dritten, 20 → zwanzigsten. */
+function deDateOrdinal(n: number): string {
+  const stem = n === 1 ? 'erst' : n === 3 ? 'dritt' : n === 7 ? 'siebt' : n === 8 ? 'acht' : deCompound(n) + (n < 20 ? 't' : 'st')
+  return stem + 'en'
 }
 
 // ---------------------------------------------------------------- tokens
@@ -183,12 +381,15 @@ function parseSentence(raw: string, language: string): { sentence: ScriptSentenc
   const tts: string[] = []
   let pause = 0
   let lead = 0
-  const en = language.toLowerCase().startsWith('en')
-  for (const m of raw.matchAll(TOKEN_RE)) {
+  const numbers = numberLanguage(language)
+  const tokens = [...raw.matchAll(TOKEN_RE)]
+  const isWordToken = (k: number) => k < tokens.length && !tokens[k]![0].startsWith('[pause')
+  for (let k = 0; k < tokens.length; k++) {
+    const m = tokens[k]!
     if (m[1] !== undefined) {
       const text = (m[1] + (m[3] ?? '')).trim()
       const spoken = m[2]!.split(/\s+/).map(normWord).filter(Boolean)
-      words.push({ text, norm: normWord(m[1]), spoken })
+      words.push({ text, norm: normWord(m[1]), spoken, tts: m[2]!.trim() })
       display.push(text)
       tts.push(m[2]!.trim() + (m[3] ?? ''))
       continue
@@ -204,10 +405,26 @@ function parseSentence(raw: string, language: string): { sentence: ScriptSentenc
     const token = m[6]!
     display.push(token)
     const [core, trail] = splitPunct(token)
-    const symbol = SYMBOL_WORDS[language.slice(0, 2)]?.[core]
-    if (symbol) {
-      words.push({ text: token, norm: normWord(core) || core, spoken: symbol })
-      tts.push(token)
+    const isLast = !tokens.slice(k + 1).some((_, j) => isWordToken(k + 1 + j))
+    // German dates: "1. Oktober" → ersten Oktober
+    if (numbers === 'de' && /^\d{1,2}$/.test(core) && trail === '.' && !isLast) {
+      const next = tokens.slice(k + 1).find((t) => !t[0].startsWith('[pause'))
+      const nextWord = next?.[6] ? normWord(splitPunct(next[6])[0]) : ''
+      if (DE_MONTHS.some((mo) => normWord(mo) === nextWord)) {
+        const ordinal = deDateOrdinal(Number(core))
+        words.push({ text: token, norm: normWord(core), spoken: [ordinal], tts: ordinal })
+        tts.push(ordinal)
+        continue
+      }
+    }
+    const special = specialWords(core, trail, language)
+    if (special) {
+      // symbols get an empty norm, so phrase lookups ("40 % weniger") skip over them
+      const piece = special.words.join(' ')
+      words.push({ text: token, norm: normWord(core), spoken: special.words, tts: piece })
+      // the TTS reads the words, so every engine says what the aligner expects; an abbreviation's
+      // own dot is dropped unless it also ends the sentence
+      tts.push(piece + (special.kind === 'abbreviation' && !isLast ? trail.replace(/^\./, '') : trail))
       continue
     }
     const norm = normWord(core)
@@ -215,12 +432,12 @@ function parseSentence(raw: string, language: string): { sentence: ScriptSentenc
       tts.push(token)
       continue
     }
-    const expanded = en ? expandNumberToken(core) : null
+    const expanded = numbers ? expandNumberToken(core, numbers) : null
     if (expanded && expanded.length) {
-      words.push({ text: token, norm, spoken: expanded })
+      words.push({ text: token, norm, spoken: expanded, tts: expanded.join(' ') })
       tts.push(expanded.join(' ') + trail)
     } else {
-      words.push({ text: token, norm, spoken: [norm] })
+      words.push({ text: token, norm, spoken: [norm], tts: core })
       tts.push(token)
     }
   }
@@ -242,7 +459,7 @@ export function parseScript(src: string): ScriptDoc {
     const sentences: ScriptSentence[] = []
     // paragraphs are joined; [pause] markers survive as tokens
     const text = current.text.join(' ').replace(/\s+/g, ' ').trim()
-    for (const raw of splitSentences(text)) {
+    for (const raw of splitSentences(text, language)) {
       const { sentence, pause, lead } = parseSentence(raw, language)
       if (lead && sentences.length) sentences[sentences.length - 1]!.pauseAfter += lead
       if (sentence.words.length === 0) {

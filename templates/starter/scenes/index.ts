@@ -1,7 +1,7 @@
 /**
  * The scenes of this video. Most are configured templates — change the text,
  * icons and numbers here. `product` is a custom scene (scenes/product.ts).
- * Template catalog: docs/templates.md.
+ * Template catalog: docs/kit-and-templates.md.
  */
 
 import { templates as T } from '@mvs/engine'

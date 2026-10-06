@@ -1,11 +1,12 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { parseScript, scriptWordCount } from '../../engine/core/script.ts'
+import { parseScript, scriptHash, scriptWordCount, type ScriptDoc } from '../../engine/core/script.ts'
 import { buildTiming, estimateTiming } from '../../engine/core/timing.ts'
 import type { TimingData, TimingSource } from '../../engine/core/types.ts'
 import type { Args } from '../lib/args.ts'
 import { decodeAudio } from '../lib/audio-io.ts'
-import { ctcAlign, heuristicAlign, refineTimes, whisperxAlign, type MaybeTime } from '../lib/align.ts'
+import { ctcAlign, heuristicAlign, refineTimes, ttsAlign, whisperxAlign, type MaybeTime, type TtsReport } from '../lib/align.ts'
 import { dbEnvelope } from '../lib/analysis.ts'
 import { CliError, log } from '../lib/log.ts'
 import { loadManifest } from '../lib/manifest.ts'
@@ -13,10 +14,13 @@ import { rel, requireProject, writeJson, type ProjectPaths } from '../lib/paths.
 import { findPythonRunner } from '../lib/python.ts'
 import { toMono } from '../lib/wav.ts'
 
-export const alignHelp = `mvs align <project> [--engine auto|ctc|whisperx|heuristic|estimate] [--audio file] [--language en]
+export const alignHelp = `mvs align <project> [--engine auto|tts|ctc|whisperx|heuristic|estimate] [--audio file] [--language en]
 
 Word-level timing of the voiceover against script.md → data/timing.json.
-  auto       (default) ctc for English when uv/Python is available, else heuristic; estimate without audio
+  auto       (default) tts when the voiceover came from \`mvs voice\` with Piper and nothing changed since;
+             else ctc for English when uv/Python is available, else heuristic; estimate without audio
+  tts        word timings reported by the TTS itself (Piper phoneme durations; exact, instant;
+             read from data/voice.json, written by \`mvs voice\`)
   ctc        wav2vec2 CTC forced alignment (CPU, ~95 MB model downloaded once to .cache/models)
   whisperx   WhisperX ASR + alignment mapped onto the script (multilingual; large download; GPU optional)
   heuristic  voice-activity based, no ML (sentence-accurate, word-approximate)
@@ -40,6 +44,7 @@ export async function runAlign(p: ProjectPaths, engineArg: string, opts: { audio
   const language = opts.language ?? String(doc.meta.language ?? 'en')
   if (engine === 'auto') {
     if (!audioPath || !existsSync(audioPath)) engine = 'estimate'
+    else if (ttsReportFor(p, audioPath, doc)) engine = 'tts'
     else if (language.startsWith('en') && findPythonRunner()) engine = 'ctc'
     else engine = 'heuristic'
     log.step(`Engine: ${engine}${engine === 'heuristic' && !language.startsWith('en') ? ' (non-English: try --engine whisperx for word accuracy)' : ''}`)
@@ -64,9 +69,14 @@ export async function runAlign(p: ProjectPaths, engineArg: string, opts: { audio
     times = await whisperxAlign(doc, audioPath, language, opts.model ?? 'small')
   } else if (engine === 'heuristic') {
     times = heuristicAlign(doc, db)
+  } else if (engine === 'tts') {
+    const rep = ttsReportFor(p, audioPath, doc)
+    if (!rep) throw new CliError('No TTS word timing matches this voiceover and script.', 'It is written by `mvs voice` with a Piper voice; the audio or script changed since. Use another --engine.')
+    times = ttsAlign(doc, rep)
   } else throw new CliError(`Unknown engine "${engine}".`)
   const missing = times.filter((t) => !t).length
-  const refined = refineTimes(doc, times, db, duration)
+  // TTS timings are exact: only fill gaps and keep order, no energy-based nudging
+  const refined = refineTimes(doc, times, engine === 'tts' ? null : db, duration)
   const source: TimingSource = engine as TimingSource
   const data = buildTiming(doc, refined, source, { audio: rel(audioPath).replace(`projects/${p.id}/`, ''), audioDuration: duration })
   writeJson(p.timing, data)
@@ -80,4 +90,29 @@ export async function alignCommand(a: Args) {
   const p = requireProject(a._[0])
   const engine = a.bool('estimate') ? 'estimate' : (a.str('engine') ?? 'auto')
   await runAlign(p, engine, { audio: a.str('audio'), language: a.str('language'), wpm: a.num('wpm'), model: a.str('model') })
+}
+
+/**
+ * The word report `mvs voice` wrote for exactly this audio file and script, if any:
+ * data/voice.json (the project's voiceover) or build/voice-<take>.json (other takes).
+ */
+export function ttsReportFor(p: ProjectPaths, audioPath: string, doc: ScriptDoc): TtsReport | null {
+  const candidates = [join(p.dir, 'data', 'voice.json'), join(p.build, 'voice.json')]
+  if (existsSync(p.build)) for (const f of readdirSync(p.build)) if (/^voice-.+\.json$/.test(f)) candidates.push(join(p.build, f))
+  const sentences = doc.sections.reduce((n, s) => n + s.sentences.length, 0)
+  const hash = scriptHash(doc)
+  let audioSha: string | null = null
+  for (const file of candidates) {
+    if (!existsSync(file)) continue
+    try {
+      const rep = JSON.parse(readFileSync(file, 'utf8')) as TtsReport
+      if (rep.scriptHash !== hash || rep.sentences?.length !== sentences) continue
+      if (!rep.sentences.some((s) => s.words?.length)) continue
+      audioSha ??= createHash('sha256').update(readFileSync(audioPath)).digest('hex')
+      if (rep.audioSha256 === audioSha) return rep
+    } catch {
+      /* unreadable report: ignore */
+    }
+  }
+  return null
 }

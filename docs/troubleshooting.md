@@ -25,7 +25,11 @@ Start with **`npx mvs doctor`** — it checks Node, dependencies, ffmpeg/libx264
 | Words drift late towards the end (heuristic/estimate) | Use the CTC engine (install uv) for word accuracy |
 | CTC alignment poor | The voice deviates from the script (ad-libs, skipped words) → fix the script to what was said; non-English → `--engine whisperx --language xx` |
 | WhisperX: slow / large download | Expected on first run (PyTorch + models). Use `--model base` for speed. |
-| `mvs voice`: language not supported | Kokoro has no German voice; use a recording or a TTS service, then `mvs align --engine whisperx --language de` |
+| `mvs voice`: language not supported | German uses Piper automatically (`language: de`). Other languages without a default: pass a Piper id, e.g. `--voice nl_NL-mls-medium` ([list](https://huggingface.co/rhasspy/piper-voices)) |
+| `mvs voice`: "Kokoro has no voice for de" | A Kokoro voice (`af_heart`) was passed for a German script: drop `--voice`/`--engine` or use `--voice de_DE-thorsten-high` |
+| German voice: "word timings unavailable" | The `onnx` package is missing (it comes with `piper-tts[alignment]` through uv); run `mvs align <id>` instead |
+| A Piper voice reads very slowly | Multi-speaker voices (e.g. `de_DE-mls-medium`) vary by speaker: `--speed 1.3` or another `--speaker` |
+| WhisperX: `PytorchStreamReader failed reading zip archive` | An interrupted model download (often behind proxies): delete the file named in the error from `~/.cache/torch/hub/checkpoints/` and run again |
 | Cut happens mid-word | Use `cut('phrase')` / `section('id')` instead of fixed seconds; add a `[pause]` in the script for more room |
 
 ## Picture
