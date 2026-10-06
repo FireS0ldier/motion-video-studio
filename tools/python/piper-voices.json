@@ -1,5 +1,5 @@
 {
-  "comment": "Curated Piper voices for `mvs voice` (engine piper). Files come from a pinned revision of rhasspy/piper-voices and are verified by SHA-256. Only voices whose training data allows commercial use are listed; any other Piper voice id also works (pinned revision, no checksum, check its MODEL_CARD).",
+  "comment": "Curated Piper voices for `mvs voice` (engine piper). Files come from a pinned revision of rhasspy/piper-voices and are verified by SHA-256. dataLicense is the license of the voice's own recordings; the models were fine-tuned from an English base voice (base), whose training data carries its own terms, so commercial use of the generated audio is not clearly licensed. Any other Piper voice id also works (pinned revision, no checksum).",
   "repo": "rhasspy/piper-voices",
   "revision": "c10ece1aade47bb51c153c893d14e5bf8e5b7117",
   "package": "piper-tts[alignment]==1.8.0",
@@ -17,7 +17,8 @@
         "sha256": "6de734444e4c3f9e33b7ebe2746dbc19b71e85f613e79c65acf623200b99a76a"
       },
       "gender": "male",
-      "license": "CC0-1.0",
+      "dataLicense": "CC0-1.0",
+      "base": "fine-tuned from en_US-lessac-high (Blizzard 2013 Lessac data, own non-commercial license)",
       "dataset": "https://github.com/thorstenMueller/Thorsten-Voice",
       "notes": "Default German voice: clear, neutral, best quality"
     },
@@ -31,7 +32,8 @@
         "sha256": "974adee790533adb273a1ac88f49027d2a1b8f0f2cf4905954a4791e79264e85"
       },
       "gender": "male",
-      "license": "CC0-1.0",
+      "dataLicense": "CC0-1.0",
+      "base": "fine-tuned from en_US-lessac-medium (Blizzard 2013 Lessac data, own non-commercial license)",
       "dataset": "https://github.com/thorstenMueller/Thorsten-Voice",
       "notes": "Same speaker, smaller and about 2x faster"
     },
@@ -45,7 +47,8 @@
         "sha256": "92895b9e99f7cfc13f4a9879da615c3d6e0baa4d660e26d7b685abdd27a6d1d3"
       },
       "gender": "male",
-      "license": "CC0-1.0",
+      "dataLicense": "CC0-1.0",
+      "base": "fine-tuned from de_DE-thorsten-medium (lessac base)",
       "dataset": "https://github.com/thorstenMueller/Thorsten-Voice",
       "speakers": [
         "neutral",
@@ -69,7 +72,8 @@
         "sha256": "56e708556b7b9b7a53c4f8957e021421e69f11a600962bba554cffbe72cf2d47"
       },
       "gender": "female",
-      "license": "CC0-1.0",
+      "dataLicense": "CC0-1.0",
+      "base": "fine-tuned from en_US-ryan-low (RyanSpeech data, CC BY-NC-SA 4.0)",
       "dataset": "https://github.com/rhasspy/dataset-voice-kerstin",
       "notes": "Female voice, 16 kHz (low quality tier)"
     }

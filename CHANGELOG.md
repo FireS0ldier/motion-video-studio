@@ -6,16 +6,18 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Added
 
-- **German voiceovers:** `mvs voice` uses Piper for German scripts (`language: de`), with four curated, checksum-pinned voices whose training data allows commercial use (`de_DE-thorsten-high` default, `thorsten-medium`, `thorsten_emotional-medium` with `--speaker`, `kerstin-low`). Any other Piper voice id works too. New options `--engine kokoro|piper`, `--speaker`, `--seed`; `--list` shows both engines.
-- **TTS word timing:** Piper voices report exact word times from the model's phoneme durations; `mvs voice` writes `data/timing.json` directly and `mvs align` reuses it (`--engine tts`, chosen automatically while audio and script are unchanged).
+- **German voiceovers:** `mvs voice` uses Piper for German scripts (`language: de`), with four curated, checksum-pinned voices (`de_DE-thorsten-high` default, `thorsten-medium`, `thorsten_emotional-medium` with `--speaker`, `kerstin-low`). Their recordings are CC0, but the models were fine-tuned from English voices with non-commercial data terms, so commercial use is not clearly licensed (see docs/audio.md). Any other Piper voice id works too. New options `--engine kokoro|piper`, `--speaker`, `--seed`; `--list` shows both engines (`--list --voice <id>`: its speakers).
+- **TTS word timing:** Piper voices report exact word times from the model's phoneme durations, mapped onto script words by phoneme alignment; `mvs voice` writes `data/voice.json` and `data/timing.json`, and `mvs align` reuses the report (`--engine tts`, chosen automatically while audio and script are unchanged). Takes written with `--out` elsewhere leave the project's timing alone.
 - **Reproducible Piper reads:** the model's sampling noise is seeded, so the same script and `--seed` give a bit-identical WAV.
-- **German script handling:** numbers (einundzwanzig, tausendzweihundertfünfzig, 3,5 → drei Komma fünf), percent, currency, `3x` → dreimal, `Mio.`/`Mrd.`, common abbreviations (z.B., d.h., bzw., ca., …) are spoken in full; WhisperX output in German is mapped with German number rules.
+- **German script handling:** numbers (einundzwanzig, tausendzweihundertfünfzig, 3,5 → drei Komma fünf), signs, percent, currency, `3x` → dreimal, `30-tägige`, `80er`, dates (`1. Oktober` → ersten Oktober), times, `Mio.`/`Mrd.`, common abbreviations (z.B., d.h., bzw., ca., Dr., …) are spoken in full; WhisperX output in German is mapped with German number rules.
 - **German starter template:** `mvs new <name> --language de` (template `starter-de`).
 
 ### Changed
 
 - Domains in English and German scripts are read out (`orbit.dev` → orbit dot dev, `acme.de` → acme punkt de) and `%` is a spoken symbol; English scripts with bare domains get a new script hash, so `mvs check` asks for `mvs align` once.
-- Symbols (`&`, `+`, `@`, `%`) are passed to the TTS as words.
+- Symbols (`&`, `+`, `@`, `%`) are passed to the TTS as words and no longer break phrase lookups across them (`f.in('40 % weniger')`).
+- Signed numbers keep their sign in English too (`+40%` → plus forty percent); the letters/digits fallback keeps non-ASCII letters.
+- The no-uv Python fallback maps package names with extras to their modules (e.g. `piper-tts[alignment]` → `piper`, `onnx`).
 
 ## [0.1.0] — 2026-10-06
 

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parseScript, scriptHash, scriptWordCount, type ScriptDoc } from '../../engine/core/script.ts'
 import { buildTiming, estimateTiming } from '../../engine/core/timing.ts'
@@ -19,7 +19,8 @@ export const alignHelp = `mvs align <project> [--engine auto|tts|ctc|whisperx|he
 Word-level timing of the voiceover against script.md → data/timing.json.
   auto       (default) tts when the voiceover came from \`mvs voice\` with Piper and nothing changed since;
              else ctc for English when uv/Python is available, else heuristic; estimate without audio
-  tts        word timings reported by the TTS itself (Piper phoneme durations; exact, instant)
+  tts        word timings reported by the TTS itself (Piper phoneme durations; exact, instant;
+             read from data/voice.json, written by \`mvs voice\`)
   ctc        wav2vec2 CTC forced alignment (CPU, ~95 MB model downloaded once to .cache/models)
   whisperx   WhisperX ASR + alignment mapped onto the script (multilingual; large download; GPU optional)
   heuristic  voice-activity based, no ML (sentence-accurate, word-approximate)
@@ -91,18 +92,27 @@ export async function alignCommand(a: Args) {
   await runAlign(p, engine, { audio: a.str('audio'), language: a.str('language'), wpm: a.num('wpm'), model: a.str('model') })
 }
 
-/** build/voice.json from `mvs voice`, if it has word timings for exactly this audio file and script. */
+/**
+ * The word report `mvs voice` wrote for exactly this audio file and script, if any:
+ * data/voice.json (the project's voiceover) or build/voice-<take>.json (other takes).
+ */
 export function ttsReportFor(p: ProjectPaths, audioPath: string, doc: ScriptDoc): TtsReport | null {
-  const file = join(p.build, 'voice.json')
-  if (!existsSync(file)) return null
-  try {
-    const rep = JSON.parse(readFileSync(file, 'utf8')) as TtsReport
-    const sentences = doc.sections.reduce((n, s) => n + s.sentences.length, 0)
-    if (rep.scriptHash !== scriptHash(doc) || rep.sentences?.length !== sentences) return null
-    if (!rep.sentences.some((s) => s.words?.length)) return null
-    if (rep.audioSha256 !== createHash('sha256').update(readFileSync(audioPath)).digest('hex')) return null
-    return rep
-  } catch {
-    return null
+  const candidates = [join(p.dir, 'data', 'voice.json'), join(p.build, 'voice.json')]
+  if (existsSync(p.build)) for (const f of readdirSync(p.build)) if (/^voice-.+\.json$/.test(f)) candidates.push(join(p.build, f))
+  const sentences = doc.sections.reduce((n, s) => n + s.sentences.length, 0)
+  const hash = scriptHash(doc)
+  let audioSha: string | null = null
+  for (const file of candidates) {
+    if (!existsSync(file)) continue
+    try {
+      const rep = JSON.parse(readFileSync(file, 'utf8')) as TtsReport
+      if (rep.scriptHash !== hash || rep.sentences?.length !== sentences) continue
+      if (!rep.sentences.some((s) => s.words?.length)) continue
+      audioSha ??= createHash('sha256').update(readFileSync(audioPath)).digest('hex')
+      if (rep.audioSha256 === audioSha) return rep
+    } catch {
+      /* unreadable report: ignore */
+    }
   }
+  return null
 }

@@ -173,19 +173,28 @@ export function mapAsrToScript(doc: ScriptDoc, asr: AsrWord[]): MaybeTime {
 
 // ------------------------------------------------------------------ TTS timings
 
-/** build/voice.json as written by `mvs voice` (word spans only with Piper). */
+/** data/voice.json as written by `mvs voice` (word spans only with Piper). */
 export interface TtsReport {
+  version?: number
   engine?: string
   voice?: string
   audioSha256?: string
   scriptHash?: string
-  sentences: Array<{ start: number; end: number; words?: Array<[number, number]> }>
+  sentences: Array<{
+    start: number
+    end: number
+    /** Spans of the words the TTS spoke (its own word split). */
+    words?: Array<[number, number]>
+    /** Spans per script word, from aligning each word's phonemes with the spoken ones (null: no phonemes matched). */
+    scriptWords?: Array<[number, number] | null>
+  }>
 }
 
 /**
- * Word times from the TTS itself (Piper phoneme durations). Exact when the TTS
- * spoke as many words as the script expects for a sentence; otherwise the
- * sentence's words are placed by spoken length along its voiced time.
+ * Word times from the TTS itself (Piper phoneme durations). Exact when the report
+ * maps phonemes to script words (`scriptWords`); reports without it map the TTS's
+ * own words when their count matches; otherwise the sentence's words are placed
+ * by spoken length along its voiced time.
  */
 export function ttsAlign(doc: ScriptDoc, rep: TtsReport): MaybeTime {
   const flat = flattenWords(doc)
@@ -195,13 +204,21 @@ export function ttsAlign(doc: ScriptDoc, rep: TtsReport): MaybeTime {
   for (const [si, idx] of bySentence) {
     const s = rep.sentences[si]
     if (!s) continue
+    if (s.scriptWords && s.scriptWords.length === idx.length) {
+      idx.forEach((wi, j) => {
+        const span = s.scriptWords![j]
+        out[wi] = span ? { start: span[0], end: span[1], conf: 1 } : null
+      })
+      continue
+    }
     const spans = s.words ?? []
     const counts = idx.map((i) => Math.max(1, flat[i]!.spoken.length))
     const total = counts.reduce((a, b) => a + b, 0)
     if (spans.length === total) {
       let c = 0
       idx.forEach((wi, j) => {
-        out[wi] = { start: spans[c]![0], end: spans[c + counts[j]! - 1]![1], conf: 1 }
+        // counts match, but the TTS may merge one word and split another: not verified per word
+        out[wi] = { start: spans[c]![0], end: spans[c + counts[j]! - 1]![1], conf: 0.8 }
         c += counts[j]!
       })
       continue

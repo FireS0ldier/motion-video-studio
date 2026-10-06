@@ -103,7 +103,8 @@ npx mvs analyze <id>        # loudness envelope, pauses, music beats → data/au
 ```
 
 - English: the default CTC aligner (wav2vec2, CPU) is accurate to ~15–30 ms per word.
-- Other languages: `npx mvs align <id> --engine whisperx --language de`.
+- A voice from `mvs voice` with Piper (German): the timing is already written (engine `tts`); `mvs align` keeps reusing it.
+- Recorded voiceovers in other languages: `npx mvs align <id> --engine whisperx --language de`.
 - Without Python/uv: the heuristic engine (voice activity) is sentence-accurate; word starts are approximated.
 - The output tells you how many words matched and the confidence. `mvs info <id>` shows the timing source; `mvs check` flags a stale timing file (script changed after aligning).
 

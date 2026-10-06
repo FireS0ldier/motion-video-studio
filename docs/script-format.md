@@ -91,8 +91,15 @@ In English and German scripts, numeric tokens, symbols and domains are expanded 
 | `&`, `+`, `@` | und, plus, at |
 | `acme.de` | acme punkt de |
 | `z.B.`, `d.h.`, `u.a.`, `u.U.`, `z.T.`, `bzw.`, `bspw.`, `ca.`, `usw.`, `inkl.`, `zzgl.`, `ggf.`, `evtl.`, `vgl.`, `sog.`, `Nr.` | zum Beispiel, das heißt, unter anderem, … |
+| `+40%`, `-20 %` | plus vierzig Prozent, minus zwanzig Prozent |
+| `30-tägige`, `80er`, `1990er` | dreißigtägige, achtziger, neunzehnhundertneunziger |
+| `1. Oktober`, `3. März` | ersten Oktober, dritten März (day before a month name; the sentence is not split there) |
+| `10:30`, `9:00` | zehn dreißig, neun |
+| `01.10.2026` | left to the TTS (read as a date) |
+| `Dr.`, `Prof.` | Doktor, Professor |
 
-`1` is read „eins“; where German needs „ein/eine“ write it: `{1 Woche|eine Woche}`. Ordinals (`1.`) and times (`10:30`) are not expanded — write them out or use braces.
+
+`1` is read „eins“; where German needs „ein/eine“ write it: `{1 Woche|eine Woche}`. Other ordinals (`der 1. Platz`) are read as cardinals and the `.` may end the sentence — write them out (`{1.|erste}`). For the formal time, write `{10:30 Uhr|zehn Uhr dreißig}`. Abbreviations are expanded only with their dot (`Sog` and `Sog.` stay words; `sog.` → sogenannt).
 
 When the speaker says something else (`3×` as "three x", `orbit.dev` as "orbit dev"), write it explicitly: `{3×|three x}`, `{orbit.dev|orbit dev}`. For other languages always use `{…|…}` for numbers.
 

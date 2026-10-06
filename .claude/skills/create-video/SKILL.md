@@ -29,7 +29,7 @@ npx mvs new <id> --title "<Title>" [--format vertical]
 1. `projects/<id>/script.md` — sections `## Name {#id}`, ~150 words/min, hook first, CTA last, `{display|spoken}` for numbers/URLs. See docs/script-format.md.
 2. `projects/<id>/brand.ts` — colors, gradients, logo, `motion: motionPresets.<x>`, fonts.
 3. Assets into `projects/<id>/assets/{screens,recordings,brand,audio}`. No screenshots: draw UI with the kit or build an HTML mock and capture it (see `projects/orbit-launch/assets-src/make-assets.ts`).
-4. Voice: `assets/audio/voiceover.wav`, or `npx mvs voice <id> --voice am_michael`, or skip (estimated timing).
+4. Voice: `assets/audio/voiceover.wav`, or `npx mvs voice <id>` (the engine follows the script language: Kokoro for English, e.g. `--voice am_michael`; Piper for German, which also writes `data/timing.json`), or skip (estimated timing). Local German voices are for drafts: their commercial license is unclear (docs/audio.md).
 5. `npx mvs align <id>` then `npx mvs analyze <id>`.
 6. Scenes in `projects/<id>/scenes/` (templates first, custom scenes for the hook and hero moment; see docs/kit-and-templates.md, docs/scene-api.md) and `timeline.ts` (`section('id')`, `cut('phrase')`, varied transitions, last entry `end: end(2)`).
 

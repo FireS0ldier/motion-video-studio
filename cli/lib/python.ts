@@ -15,6 +15,15 @@ export interface PythonRunner {
   describe: string
 }
 
+/** Python modules a pip requirement provides, e.g. "piper-tts[alignment]==1.8.0" → piper, onnx. */
+export function importNames(requirement: string): string[] {
+  const name = requirement.replace(/\[.*?\]/, '').replace(/[<>=!~;].*$/, '').trim().toLowerCase()
+  const known: Record<string, string> = { 'piper-tts': 'piper', 'kokoro-onnx': 'kokoro_onnx', 'onnxruntime-gpu': 'onnxruntime' }
+  const mods = [known[name] ?? name.replace(/-/g, '_')]
+  if (/\[[^\]]*alignment/.test(requirement) && name === 'piper-tts') mods.push('onnx')
+  return mods
+}
+
 export function findPythonRunner(): PythonRunner | null {
   if (which('uv')) return { kind: 'uv', describe: 'uv' }
   for (const py of ['python3', 'python']) {
@@ -48,7 +57,7 @@ export async function runPythonTool(script: string, args: string[], packages: st
   } else {
     const exe = pythonExe()
     if (!exe) throw new CliError('Python is not installed.', 'Install uv (https://docs.astral.sh/uv/) — it manages Python and the packages for you.')
-    const mods = packages.map((p) => p.replace(/[<>=].*$/, '').replace(/-/g, '_'))
+    const mods = packages.flatMap(importNames)
     const check = runSync(exe, ['-c', mods.map((m) => `import ${m}`).join(';')])
     if (check.code !== 0) throw new CliError(`Python packages missing: ${packages.join(', ')}`, 'Install uv (https://docs.astral.sh/uv/) and re-run; it provides them automatically.')
     cmd = exe

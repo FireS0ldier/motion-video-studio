@@ -21,7 +21,10 @@ export interface PiperVoiceEntry {
   onnx: { sha256: string; size: number }
   config: { sha256: string }
   gender: string
-  license: string
+  /** License of the voice's own recordings. */
+  dataLicense: string
+  /** Base model it was fine-tuned from (with that model's data terms). */
+  base: string
   dataset: string
   notes?: string
   speakers?: string[]
@@ -83,7 +86,8 @@ export interface VoiceChoice {
  */
 export function chooseVoice(r: VoiceRequest): VoiceChoice {
   const language = (r.language || 'en').toLowerCase()
-  const kLang = r.lang ?? kokoroLang(language)
+  // `lang` (Kokoro's language code) can refine Kokoro, but never switches a German script to it
+  const kLang = (r.lang && kokoroLang(r.lang) ? r.lang : null) ?? kokoroLang(language)
   let engine: TtsEngine
   if (r.engine && r.engine !== 'auto') {
     if (r.engine !== 'kokoro' && r.engine !== 'piper') throw new CliError(`Unknown TTS engine "${r.engine}".`, 'Use --engine kokoro or --engine piper.')
@@ -95,7 +99,11 @@ export function chooseVoice(r: VoiceRequest): VoiceChoice {
   if (engine === 'kokoro') {
     if (!kLang) throw new CliError(`Kokoro has no voice for "${language}".`, 'German and other languages use Piper: drop --engine/--voice, or pass --voice de_DE-thorsten-high.')
     if (r.voice && isPiperVoice(r.voice)) throw new CliError(`"${r.voice}" is a Piper voice.`, 'Drop --engine kokoro, or pick a Kokoro voice (mvs voice --list).')
-    return { engine, voice: r.voice && isKokoroVoice(r.voice) ? r.voice : 'am_michael', lang: kLang }
+    if (r.voice && !isKokoroVoice(r.voice)) {
+      if (r.voiceFromFlag) throw new CliError(`"${r.voice}" is not a Kokoro voice id.`, 'Kokoro ids look like am_michael, af_heart, bf_emma (mvs voice --list).')
+      return { engine, voice: 'am_michael', lang: kLang, note: `script.md voice "${r.voice}" is not a Kokoro voice; using am_michael` }
+    }
+    return { engine, voice: r.voice ?? 'am_michael', lang: kLang }
   }
   if (r.voice && isPiperVoice(r.voice)) return { engine, voice: r.voice }
   const fallback = piperCatalog().defaults[language.slice(0, 2)]
@@ -113,7 +121,12 @@ export function formatPiperVoices(): string {
   const rows = Object.entries(c.voices).map(([id, v]) => {
     const def = Object.values(c.defaults).includes(id) ? ' (default)' : ''
     const mb = Math.round(v.onnx.size / 1e6)
-    return `  ${(id + def).padEnd(42)} ${v.gender.padEnd(7)} ${v.license.padEnd(10)} ${String(mb).padStart(4)} MB  ${v.notes ?? ''}`
+    return `  ${(id + def).padEnd(42)} ${v.gender.padEnd(7)} ${String(mb).padStart(4)} MB  ${v.notes ?? ''}`
   })
-  return [`Piper voices (curated, checksum-pinned; any id from https://huggingface.co/${c.repo} also works):`, ...rows].join('\n')
+  return [
+    `Piper voices (curated, checksum-pinned; any id from https://huggingface.co/${c.repo} also works):`,
+    ...rows,
+    '  Recordings are CC0, but the models were fine-tuned from English voices with non-commercial data terms:',
+    '  commercial use of the audio is not clearly licensed. Use them for drafts, or check before publishing.',
+  ].join('\n')
 }

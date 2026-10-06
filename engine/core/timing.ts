@@ -155,6 +155,8 @@ export class Timing {
     if (!target) return []
     const out: Array<[number, number]> = []
     for (let i = 0; i < this.norms.length; i++) {
+      // words without letters or digits (%, €, &) never start a match; inside one they are skipped
+      if (!this.norms[i]) continue
       let acc = ''
       for (let j = i; j < this.norms.length; j++) {
         acc += this.norms[j]

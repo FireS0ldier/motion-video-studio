@@ -30,16 +30,21 @@ npx mvs voice mein-video --voice de_DE-thorsten_emotional-medium --speaker surpr
 npx mvs voice mein-video --seed 2        # another take of the same script
 ```
 
-| Voice | | License (voice data) | Notes |
-| --- | --- | --- | --- |
-| `de_DE-thorsten-high` | male | CC0 | Default. Clearest; 114 MB |
-| `de_DE-thorsten-medium` | male | CC0 | Same speaker, ~2× faster to generate; 63 MB |
-| `de_DE-thorsten_emotional-medium` | male | CC0 | `--speaker neutral, amused, angry, disgusted, drunk, sleepy, surprised, whisper` |
-| `de_DE-kerstin-low` | female | CC0 | 16 kHz; 63 MB |
+| Voice | | Recordings | Fine-tuned from | Notes |
+| --- | --- | --- | --- | --- |
+| `de_DE-thorsten-high` | male | CC0 | `en_US-lessac-high` | Default. Clearest; 114 MB |
+| `de_DE-thorsten-medium` | male | CC0 | `en_US-lessac-medium` | Same speaker, ~2× faster to generate; 63 MB |
+| `de_DE-thorsten_emotional-medium` | male | CC0 | `thorsten-medium` | `--speaker neutral, amused, angry, disgusted, drunk, sleepy, surprised, whisper` |
+| `de_DE-kerstin-low` | female | CC0 | `en_US-ryan-low` | 16 kHz; 63 MB |
 
-These voices are checksum-pinned and their training data allows commercial use. Any other id from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) works too (downloaded from the same pinned revision without a checksum; check its `MODEL_CARD` license, e.g. `de_DE-pavoque-low` is non-commercial). Measured on the German starter script: word error rate of a German Whisper transcription 7–14 % (errors mostly on one-word sentences and brand names), generation faster than real time on a 4-core CPU.
+> **License note:** the German recordings are CC0, but every German Piper model was fine-tuned from an English base voice whose training data has non-commercial terms (Blizzard 2013 Lessac data; RyanSpeech, CC BY-NC-SA 4.0). Whether the generated audio may be used commercially is therefore not clearly licensed. Use these voices for drafts, placeholders, internal and demo videos; for a commercial release, use a recorded voiceover or a TTS service with a commercial license, or get legal advice.
 
-- **Same script + same `--seed` → the same WAV** (the model's sampling noise is seeded). Change the seed (`--seed`, or `seed:` in the script front matter) for another take.
+The voices are checksum-pinned. Any other id from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) works too (downloaded from the same pinned revision without a checksum; check its `MODEL_CARD`). `de_DE-mls-medium` is not listed: its speakers read very slowly and a German Whisper transcription lost whole passages. Measured on the German starter script: word error rate of a German Whisper transcription 7–14 % for the listed voices (errors mostly on one-word sentences and brand names), generation faster than real time on a 4-core CPU.
+
+`npx mvs voice --list --voice de_DE-thorsten_emotional-medium` lists the speakers of a voice.
+
+- **Same script + same `--seed` → the same WAV** on the same platform (the model's sampling noise is seeded). Change the seed (`--seed`, or `seed:` in the script front matter) for another take; `--out assets/audio/take2.wav` keeps the current voiceover and its timing untouched.
+- **Word timing:** the report goes to `data/voice.json` (commit it with the audio); `mvs voice` writes `data/timing.json` from it, and `mvs align` reuses it while audio and script are unchanged. Each script word is phonemized on its own and aligned with the phonemes actually spoken, so words the TTS merges or splits ("es ist", "iPhone") still get exact times.
 - Numbers, symbols, domains and common abbreviations are written out before synthesis (`40 %` → „vierzig Prozent“, `z.B.` → „zum Beispiel“, `acme.de` → „acme punkt de“), see [script-format.md](script-format.md#numbers-and-symbols).
 - Voice settings can live in the script front matter: `voice:`, `speaker:`, `speed:`, `seed:`.
 
@@ -63,7 +68,7 @@ npx mvs align <id> --estimate --wpm 155              # no audio yet
 
 | Engine | How | Accuracy | Needs |
 | --- | --- | --- | --- |
-| `tts` | Word times reported by the TTS itself (Piper phoneme durations), written by `mvs voice` | Exact for the generated audio: sentence starts within ~30 ms of the acoustic onset on the German starter | A voiceover from `mvs voice` with a Piper voice |
+| `tts` | Word times reported by the TTS itself (Piper phoneme durations), from `data/voice.json` written by `mvs voice` | Exact for the generated audio: sentence starts within ~30 ms of the acoustic onset on the German starter | A voiceover from `mvs voice` with a Piper voice |
 | `ctc` (default for English) | Forced alignment of the known script with wav2vec2-base-960h (ONNX, int8) and a CTC Viterbi path | ~15 ms median vs. ground truth on the demo | uv (or Python ≥ 3.10); ~95 MB model, downloaded once, pinned by checksum |
 | `whisperx` | WhisperX ASR + phoneme alignment, words mapped onto the script with sequence alignment | ~20 ms median vs. CTC on the English demo; on German speech ~0.1 s late at sentence starts; multilingual | uv; a large first download (PyTorch, WhisperX, the Whisper model, a wav2vec2 model per language; `--model small` default) |
 | `heuristic` | Voice-activity detection: sentences mapped to speech regions, words spread by length inside | Sentence-accurate, words approximate | Nothing |
