@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { parseScript } from '../../engine/core/script.ts'
 import type { Args } from '../lib/args.ts'
 import { ffmpeg } from '../lib/ffmpeg.ts'
@@ -50,7 +50,7 @@ export async function voiceCommand(a: Args) {
   ensureDir(p.build)
   log.step(`Synthesizing ${items.length} sentences with Kokoro (${voice}, speed ${speed}, ${lang})`)
   await runPythonTool('tts_kokoro.py', ['--script', scriptJson, '--out', raw, '--report', report, '--models', models, '--voice', voice, '--speed', String(speed), '--lang', lang], ['kokoro-onnx'])
-  const out = join(p.dir, a.str('out') ?? 'assets/audio/voiceover.wav')
+  const out = resolve(p.dir, a.str('out') ?? 'assets/audio/voiceover.wav')
   ensureDir(join(out, '..'))
   // 48 kHz mono, gentle high-pass and de-click; loudness is handled by the mixer
   await ffmpeg(['-i', raw, '-af', 'highpass=f=70,aresample=48000:resampler=soxr', '-ar', '48000', '-ac', '1', '-c:a', 'pcm_s16le', out])

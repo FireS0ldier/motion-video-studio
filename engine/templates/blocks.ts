@@ -158,28 +158,31 @@ export function code(o: CodeSceneOptions): SceneDefinition {
       const hasText = !!o.title
       const side = o.side ?? 'left'
       const tw = portrait ? area.w : area.w * 0.32
-      const avail = portrait ? area.w : area.w - (hasText ? tw + 70 * s : 0)
+      // portrait: the editor may use the action-safe width (code is the hero on a phone screen)
+      const avail = portrait ? f.stage.safe.w : area.w - (hasText ? tw + 70 * s : 0)
       const lines = o.code.split('\n')
       const longest = Math.max(...lines.map((l) => l.length), 20)
       // monospace glyphs are ~0.6em wide; leave room for gutter and padding
-      const fontSize = Math.min(32 * s, (avail - 140 * s) / (longest * 0.62))
+      const fontSize = Math.min(portrait ? 30 * f.stage.unit : 32 * s, (avail - 140 * s) / (longest * 0.62))
       const edW = Math.min(avail, longest * 0.62 * fontSize + 150 * s)
       const edH = 50 + fontSize * 1.55 * lines.length + fontSize * 2.2
-      const termH = o.terminal ? 200 * s : 0
+      // terminal sizing: phone screens need the larger, unit-based size
+      const ts = portrait ? f.stage.unit : s
+      const termH = o.terminal ? 200 * ts : 0
       const blockH = edH + (o.terminal ? termH * 0.7 : 0)
       const edX = portrait ? f.stage.cx : hasText ? (side === 'left' ? area.x + area.w - edW / 2 : area.x + edW / 2) : f.stage.cx
-      const edY = portrait ? area.y + area.h * 0.62 - blockH / 2 + edH / 2 : f.stage.cy - blockH / 2 + edH / 2
+      const edY = portrait ? area.y + area.h * 0.58 - blockH / 2 + edH / 2 : f.stage.cy - blockH / 2 + edH / 2
       if (hasText) headline(g, { x: portrait ? f.stage.cx : side === 'left' ? area.x : area.x + area.w - tw, y: portrait ? area.y + 100 * s : f.stage.cy, eyebrow: o.eyebrow, title: o.title!, subtitle: o.subtitle, align: portrait ? 'center' : 'left', size: 'h1', maxWidth: tw, sync: true, exit: false })
       const enter = spring(f.lt - 0.05, 'gentle')
       g.layer({ w: edW, h: edH, x: edX, y: edY + (1 - Math.min(1, enter)) * 80, rotateY: (side === 'left' ? -7 : 7) * (1 - 0.5 * f.p) * (portrait ? 0 : 1), rotateX: 3, opacity: clamp01(enter * 1.5), pad: 90, light: 0.4 }, (lg) => {
         codeBlock(lg, { x: edW / 2, y: edH / 2, w: edW, h: edH, code: o.code, lang: o.lang ?? 'ts', title: o.file, typeAt: o.typeAt ?? { at: f.start + 0.4 }, cps: o.cps, highlight: o.highlight, highlightAt: o.highlightAt, fontSize })
       })
       if (o.terminal) {
-        const tW = Math.min(edW * 0.72, 860 * s)
+        const tW = Math.min(edW * (portrait ? 0.86 : 0.72), 860 * ts)
         const tp = spring(f.since(o.terminal[0]!.at), 'snappy')
         if (tp > 0.001) {
           g.layer({ w: tW, h: termH, x: edX + (portrait ? 0 : edW / 2 - tW / 2 + 60 * s), y: edY + edH / 2 + termH * 0.3, z: -60, rotateY: side === 'left' ? -5 : 5, opacity: clamp01(tp * 1.5), scale: 0.9 + 0.1 * Math.min(1, tp), pad: 80 }, (lg) => {
-            terminal(lg, { x: tW / 2, y: termH / 2, w: tW, h: termH, lines: o.terminal!, title: 'zsh', fontSize: 22 * s })
+            terminal(lg, { x: tW / 2, y: termH / 2, w: tW, h: termH, lines: o.terminal!, title: 'zsh', fontSize: 22 * ts })
           })
         }
       }

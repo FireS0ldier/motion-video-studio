@@ -1,5 +1,5 @@
 import { writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import type { Args } from '../lib/args.ts'
 import { CliError, log } from '../lib/log.ts'
 import { ensureDir, rel, requireProject } from '../lib/paths.ts'
@@ -22,7 +22,7 @@ export async function stillCommand(a: Args) {
   const scale = a.num('scale', 1)!
   const samplesArg = a.str('samples', 'auto')!
   const samples = samplesArg === 'auto' ? 'auto' : Number(samplesArg)
-  const outDir = ensureDir(a.str('out') ? join(process.cwd(), a.str('out')!) : join(p.out, 'stills'))
+  const outDir = ensureDir(a.str('out') ? resolve(a.str('out')!) : join(p.out, 'stills'))
   await prepareAssets(p, { quiet: true })
   const session = await openSession({ project: p.id, scale, quality: 'final', workers: 1, format: a.str('format'), verbose: a.bool('verbose') })
   try {
