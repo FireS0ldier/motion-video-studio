@@ -253,7 +253,7 @@ export async function ctcAlign(doc: ScriptDoc, pcm16k: Float32Array): Promise<Ma
 export async function whisperxAlign(doc: ScriptDoc, audioFile: string, language: string, model: string): Promise<MaybeTime> {
   const dir = ensureDir(join(CACHE, 'align'))
   const outFile = join(dir, 'whisperx.json')
-  await runPythonTool('align_whisperx.py', ['--audio', audioFile, '--out', outFile, '--language', language, '--model', model], ['whisperx'], { python: '3.12' })
+  await runPythonTool('align_whisperx.py', ['--audio', audioFile, '--out', outFile, '--language', language, '--model', model, '--models', join(CACHE, 'models')], ['whisperx'], { python: '3.12' })
   const res = JSON.parse(readFileSync(outFile, 'utf8')) as { words: AsrWord[] }
   return mapAsrToScript(doc, res.words)
 }

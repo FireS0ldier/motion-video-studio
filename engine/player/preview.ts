@@ -7,6 +7,7 @@
  */
 
 import type { ResolvedProject } from '../core/project.ts'
+import type { FormatName } from '../core/format.ts'
 import { Renderer } from '../core/renderer.ts'
 import { Compositor } from '../gl/compositor.ts'
 import { listProjects, loadProject, type LoadedProject } from './loader.ts'
@@ -57,7 +58,8 @@ export async function startPreview(root: HTMLElement, projectId: string, params:
   const sameProject = saved.project === projectId
   let loaded: LoadedProject
   try {
-    loaded = await loadProject(projectId)
+    // ?format=vertical previews another format of the same project
+    loaded = await loadProject(projectId, { format: (params.get('format') as FormatName | null) ?? undefined })
   } catch (e) {
     root.replaceChildren(el('div', { class: 'error' }, `Could not load project "${projectId}":\n\n${(e as Error).stack ?? e}`))
     throw e

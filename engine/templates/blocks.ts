@@ -86,7 +86,7 @@ export interface Stat {
   format?: Parameters<typeof formatNumber>[1]
   /** Default: when the label (or its first words) is spoken. */
   at?: Anchor
-  /** Phrase to sync to instead of the label (e.g. "forty percent"). */
+  /** Phrase to sync to instead of the label, as written in script.md (e.g. "40%"). */
   say?: string
 }
 

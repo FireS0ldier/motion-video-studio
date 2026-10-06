@@ -71,7 +71,7 @@ function mixKey(p: ProjectPaths, m: Manifest): string {
     if (f) files.add(f)
   }
   return createHash('sha1')
-    .update(JSON.stringify({ audio: m.audio, cues: m.cues, duration: m.duration, files: [...files].sort().map(fileStamp), v: 2 }))
+    .update(JSON.stringify({ audio: m.audio, cues: m.cues, duration: m.duration, files: [...files].sort().map(fileStamp), v: 3 }))
     .digest('hex')
     .slice(0, 16)
 }
@@ -222,8 +222,9 @@ export async function buildMix(p: ProjectPaths, m: Manifest): Promise<MixReport>
   const gainDb = measured <= -69 ? 0 : Math.max(-30, Math.min(24, target - measured))
   const g = dbToGain(gainDb)
   for (const c of master) for (let i = 0; i < N; i++) c[i]! *= g
-  const ceiling = a.master?.ceiling ?? -1
-  limit(master, ceiling - 0.7)
+  // -1.5 dBFS sample ceiling leaves room for AAC encoder overshoot (lands near -1 dBTP)
+  const ceiling = a.master?.ceiling ?? -1.5
+  limit(master, ceiling - 0.2)
   // limiting lowers loudness a little: one corrective pass toward the target
   if (measured > -69) {
     const after = integratedLoudness(master, RATE)
@@ -231,7 +232,7 @@ export async function buildMix(p: ProjectPaths, m: Manifest): Promise<MixReport>
     if (Math.abs(fix) > 0.15) {
       const k = dbToGain(fix)
       for (const c of master) for (let i = 0; i < N; i++) c[i]! *= k
-      limit(master, ceiling - 0.7)
+      limit(master, ceiling - 0.2)
     }
   }
   // fade the very edges to avoid clicks

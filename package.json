@@ -13,6 +13,7 @@
   },
   "scripts": {
     "mvs": "node cli/bin.mjs",
+    "setup": "node cli/bin.mjs setup",
     "dev": "node cli/bin.mjs dev",
     "doctor": "node cli/bin.mjs doctor",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -33,5 +34,19 @@
     "@fontsource/instrument-serif": "^5.3.0",
     "lucide": "^1.52.0",
     "playwright-core": "^1.63.0"
+  },
+  "keywords": [
+    "motion-graphics",
+    "video",
+    "remotion-alternative",
+    "webgl",
+    "ffmpeg",
+    "voiceover",
+    "ai-agents",
+    "claude-code"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FireS0ldier/motion-video-studio.git"
   }
 }

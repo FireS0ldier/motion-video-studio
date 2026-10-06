@@ -9,8 +9,8 @@ import { PROJECTS, rel, TEMPLATES } from '../lib/paths.ts'
 export const newHelp = `mvs new <name> [--template starter] [--title "Product launch"] [--format landscape] [--force]
 
 Create projects/<name>/ from a template. Templates live in templates/:
-  starter   generic product video (hook, problem, product intro, features,
-            screenshot showcase, stats, call to action) — works in every format
+  starter   generic product video (hook, problem, product UI drawn with the kit,
+            features, stats, call to action) — works in every format
 Formats: ${Object.keys(formats).join(', ')}
 Next steps are printed after creation (script → voice → align → preview → render).`
 

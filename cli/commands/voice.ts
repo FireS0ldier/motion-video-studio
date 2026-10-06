@@ -20,13 +20,13 @@ Front matter in script.md can set voice / speed / lang; [pause 0.5] adds silence
 Model files (~120 MB) are downloaded once into .cache/models/kokoro.`
 
 export async function voiceCommand(a: Args) {
-  const p = requireProject(a._[0])
   const models = ensureDir(join(CACHE, 'models', 'kokoro'))
   if (a.bool('list')) {
     const out = await runPythonTool('tts_kokoro.py', ['--models', models, '--list-voices'], ['kokoro-onnx'])
     log.info(out.trim())
     return
   }
+  const p = requireProject(a._[0])
   if (!existsSync(p.script)) throw new CliError(`${rel(p.script)} not found.`)
   const doc = parseScript(readFileSync(p.script, 'utf8'))
   const sentencePause = Number(doc.meta.sentencePause ?? 0.32)

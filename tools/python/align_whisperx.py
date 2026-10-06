@@ -14,9 +14,13 @@ import argparse
 import json
 import os
 import sys
+import zipfile
 
 sys.path.insert(0, os.path.dirname(__file__))
-from common import log  # noqa: E402
+from common import download, log  # noqa: E402
+
+PUNKT_URL = "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt_tab.zip"
+PUNKT_SHA = "e57f64187974277726a3417ca6f181ec5403676c717672eef6a748a7b20e0106"
 
 
 def main():
@@ -26,10 +30,21 @@ def main():
     ap.add_argument("--language", default=None)
     ap.add_argument("--model", default="small")
     ap.add_argument("--batch", type=int, default=8)
+    ap.add_argument("--models", default=os.path.join(os.path.dirname(__file__), "..", "..", ".cache", "models"))
     args = ap.parse_args()
 
+    import nltk
     import torch
     import whisperx
+
+    # whisperx splits sentences with NLTK's punkt tokenizer. Fetch it ourselves from a
+    # pinned URL with a checksum (works behind proxies, keeps NLTK's SSRF guard intact).
+    nltk_dir = os.path.join(args.models, "nltk_data")
+    if not os.path.isdir(os.path.join(nltk_dir, "tokenizers", "punkt_tab")):
+        z = download(PUNKT_URL, os.path.join(nltk_dir, "punkt_tab.zip"), PUNKT_SHA)
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(os.path.join(nltk_dir, "tokenizers"))
+    nltk.data.path.insert(0, nltk_dir)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     compute = "float16" if device == "cuda" else "int8"

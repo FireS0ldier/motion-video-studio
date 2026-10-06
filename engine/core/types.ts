@@ -276,7 +276,7 @@ export interface AudioConfig {
   master?: {
     /** Integrated loudness target (LUFS). -14 for web/social, -16 for podcasts, -23 for broadcast. */
     lufs?: number
-    /** Peak ceiling (dBFS). */
+    /** Sample-peak ceiling in dBFS (default -1.5, which leaves room for AAC overshoot). */
     ceiling?: number
   }
 }

@@ -3,8 +3,21 @@
  * Run `npx mvs help` for the command list, `npx mvs <command> --help` for details.
  */
 
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { parseArgs, type Args } from './lib/args.ts'
 import { CliError, color, log } from './lib/log.ts'
+import { ROOT } from './lib/paths.ts'
+
+// piping into `head` etc. closes stdout early: that is not an error
+process.stdout.on('error', (e: NodeJS.ErrnoException) => {
+  if (e.code === 'EPIPE') process.exit(0)
+  throw e
+})
+
+// local settings (MVS_BROWSER, MVS_GL, ...) from .env, see .env.example
+const envFile = join(ROOT, '.env')
+if (existsSync(envFile)) process.loadEnvFile(envFile)
 
 interface CommandModule {
   run(a: Args): Promise<void>
@@ -18,6 +31,13 @@ interface CommandSpec {
 }
 
 const commands: Record<string, CommandSpec> = {
+  setup: {
+    summary: 'One-time setup: browser install if needed, ffmpeg check, doctor',
+    load: async () => {
+      const m = await import('./commands/setup.ts')
+      return { run: m.setupCommand, help: m.setupHelp }
+    },
+  },
   new: {
     summary: 'Create a new video project from a template',
     booleans: ['force'],
@@ -52,6 +72,7 @@ const commands: Record<string, CommandSpec> = {
   },
   voice: {
     summary: 'Generate a voiceover from script.md with local TTS (Kokoro)',
+    booleans: ['list'],
     load: async () => {
       const m = await import('./commands/voice.ts')
       return { run: m.voiceCommand, help: m.voiceHelp }
@@ -141,7 +162,7 @@ function printHelp() {
   log.info('Usage: npx mvs <command> [project] [options]\n')
   const w = Math.max(...Object.keys(commands).map((k) => k.length))
   for (const [name, spec] of Object.entries(commands)) log.info(`  ${color.cyan(name.padEnd(w))}  ${spec.summary}`)
-  log.info(`\nTypical flow: new → (voice) → align → analyze → dev → still → render --draft → render`)
+  log.info(`\nTypical flow: new → (voice) → align → analyze → dev → check → still → render --draft → render`)
   log.info(`Docs: README.md, CLAUDE.md, docs/. Details: npx mvs <command> --help`)
 }
 

@@ -180,9 +180,9 @@ export function montage(o: { name?: string; words: MontageWord[]; colors?: strin
       const fg = bg === f.brand.colors.accent ? f.brand.colors.bg : '#ffffff'
       if (w.icon) g.icon(w.icon, { x: f.stage.cx, y: f.stage.cy - 150 * s, size: 120 * s, color: fg, stroke: 2.2, progress: clamp01(since / 0.3) })
       g.text(w.text, { x: f.stage.cx, y: f.stage.cy + (w.icon ? 60 * s : 0), style: 'hero', size: 170 * s, color: fg, anim: { preset: 'slam', at: { at: t[i]! - 0.08 }, duration: 0.3, by: 'line' } })
-      // white flash on each cut
-      const flash = clamp01(1 - since / 0.12)
-      if (flash > 0) g.fx({ grade: { exposure: 0.8 * flash } })
+      // short exposure kick on each cut (subtle: bloom amplifies it)
+      const flash = clamp01(1 - since / 0.1) ** 2
+      if (flash > 0) g.fx({ grade: { exposure: 0.35 * flash } })
     },
     cues(c) {
       if (o.sfx === false) return []

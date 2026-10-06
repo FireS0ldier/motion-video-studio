@@ -4,7 +4,7 @@ import timeline from './timeline.ts'
 
 /**
  * Orbit — launch film (demo project).
- * 1920x1080 @ 60 fps, voiceover-driven, ~60 s.
+ * 1920x1080 @ 60 fps, voiceover-driven, ~50 s.
  */
 export default defineProject({
   title: 'Orbit — launch film',
