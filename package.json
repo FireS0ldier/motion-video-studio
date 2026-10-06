@@ -1,0 +1,52 @@
+{
+  "name": "motion-video-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Motion-as-code video engine and agent workflow: voiceover-driven product, app and marketing videos rendered from TypeScript.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "bin": {
+    "mvs": "cli/bin.mjs"
+  },
+  "scripts": {
+    "mvs": "node cli/bin.mjs",
+    "setup": "node cli/bin.mjs setup",
+    "dev": "node cli/bin.mjs dev",
+    "doctor": "node cli/bin.mjs doctor",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "check": "npm run typecheck && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "lucide": "^1.52.0",
+    "playwright-core": "^1.63.0"
+  },
+  "keywords": [
+    "motion-graphics",
+    "video",
+    "remotion-alternative",
+    "webgl",
+    "ffmpeg",
+    "voiceover",
+    "ai-agents",
+    "claude-code"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FireS0ldier/motion-video-studio.git"
+  }
+}

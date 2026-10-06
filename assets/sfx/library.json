@@ -1,0 +1,148 @@
+{
+  "whoosh": {
+    "description": "Airy medium whoosh for slides and pushes",
+    "tags": [
+      "transition",
+      "whoosh"
+    ],
+    "peak": 0.42,
+    "duration": 1.35
+  },
+  "whoosh-fast": {
+    "description": "Short bright whoosh for whip pans and quick cuts",
+    "tags": [
+      "transition",
+      "whoosh"
+    ],
+    "peak": 0.2,
+    "duration": 1
+  },
+  "whoosh-deep": {
+    "description": "Deep whoosh with sub for zoom-through transitions",
+    "tags": [
+      "transition",
+      "whoosh"
+    ],
+    "peak": 0.55,
+    "duration": 1.9
+  },
+  "swipe": {
+    "description": "Short bright swipe for wipes, iris and UI panels",
+    "tags": [
+      "transition",
+      "ui"
+    ],
+    "peak": 0.12,
+    "duration": 0.3
+  },
+  "reverse": {
+    "description": "Reverse swell that ends abruptly: lead-in to a slam or a hard cut",
+    "tags": [
+      "transition",
+      "riser"
+    ],
+    "peak": 0.78,
+    "duration": 1.1
+  },
+  "riser": {
+    "description": "Two-second tension riser (noise + rising tone), peaks at the end",
+    "tags": [
+      "build",
+      "riser"
+    ],
+    "peak": 2.15,
+    "duration": 3
+  },
+  "impact": {
+    "description": "Cinematic low impact with sub drop and tail (logo hits, big reveals)",
+    "tags": [
+      "hit",
+      "impact"
+    ],
+    "peak": 0.01,
+    "duration": 2.3
+  },
+  "hit": {
+    "description": "Punchy short hit (text slams, counters landing)",
+    "tags": [
+      "hit"
+    ],
+    "peak": 0.005,
+    "duration": 0.908
+  },
+  "click": {
+    "description": "Crisp UI click (buttons, cursor clicks, toggles)",
+    "tags": [
+      "ui"
+    ],
+    "peak": 0.002,
+    "duration": 0.06
+  },
+  "tap": {
+    "description": "Soft UI tap (cards appearing, list items, hovers)",
+    "tags": [
+      "ui"
+    ],
+    "peak": 0.003,
+    "duration": 0.09
+  },
+  "pop": {
+    "description": "Bubbly pop (badges, icons, notifications popping in)",
+    "tags": [
+      "ui"
+    ],
+    "peak": 0.01,
+    "duration": 0.18
+  },
+  "tick": {
+    "description": "Tiny tick (counters, progress steps, typing on screen)",
+    "tags": [
+      "ui"
+    ],
+    "peak": 0.001,
+    "duration": 0.03
+  },
+  "ding": {
+    "description": "Bright two-note success chime (done, sent, achievement)",
+    "tags": [
+      "ui",
+      "success"
+    ],
+    "peak": 0.01,
+    "duration": 2.479
+  },
+  "notify": {
+    "description": "Soft two-tone notification",
+    "tags": [
+      "ui"
+    ],
+    "peak": 0.01,
+    "duration": 1.5
+  },
+  "type": {
+    "description": "Keyboard typing burst, 1.4 s (code / prompt typing)",
+    "tags": [
+      "ui",
+      "typing"
+    ],
+    "peak": 0.01,
+    "duration": 1.322
+  },
+  "glitch": {
+    "description": "Digital glitch burst (glitch transitions, errors, data)",
+    "tags": [
+      "transition",
+      "glitch"
+    ],
+    "peak": 0.15,
+    "duration": 0.45
+  },
+  "shimmer": {
+    "description": "Sparkle / shimmer (magic moments, AI features, highlights)",
+    "tags": [
+      "accent"
+    ],
+    "peak": 0.2,
+    "duration": 1.976
+  }
+}

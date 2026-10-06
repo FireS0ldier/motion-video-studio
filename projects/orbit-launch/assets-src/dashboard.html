@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="ui.css" />
+    <style>
+      body { width: 1600px; height: 1000px; display: grid; grid-template-columns: 228px 1fr; }
+      aside { background: #0c0e15; border-right: 1px solid var(--line); padding: 22px 16px; display: flex; flex-direction: column; gap: 4px; }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 750; font-size: 21px; letter-spacing: -0.03em; padding: 4px 8px 22px; }
+      .brand img { width: 30px; height: 30px; }
+      .nav { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--muted); font-size: 15px; font-weight: 500; }
+      .nav.active { background: rgba(124, 92, 255, 0.14); color: var(--text); }
+      .nav.active svg { stroke: var(--violet); }
+      .spacer { flex: 1; }
+      .team { display: flex; align-items: center; gap: 10px; padding: 10px; border-top: 1px solid var(--line); font-size: 14px; }
+      .av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #7c5cff, #2ee6d6); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+      main { padding: 22px 28px; display: grid; grid-template-rows: auto auto 1fr; gap: 18px; min-height: 0; }
+      header { display: flex; align-items: center; gap: 14px; }
+      header h1 { font-size: 26px; letter-spacing: -0.02em; font-weight: 700; }
+      .live { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--green); background: rgba(61, 220, 151, 0.1); padding: 5px 10px; border-radius: 999px; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 var(--pulse, 0px) rgba(61, 220, 151, 0.25); }
+      .search { margin-left: auto; width: 420px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+      .search kbd { margin-left: auto; font-family: inherit; font-size: 12px; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+      .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .kpi { padding: 18px 20px; }
+      .kpi .label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+      .kpi .value { font-size: 32px; font-weight: 720; letter-spacing: -0.03em; margin: 8px 0 6px; }
+      .kpi .delta { font-size: 13px; font-weight: 600; }
+      .grid { display: grid; grid-template-columns: 1.75fr 1fr; gap: 16px; min-height: 0; }
+      .chart { padding: 20px 22px; display: flex; flex-direction: column; min-height: 0; }
+      .chart h2, .side h2 { font-size: 16px; font-weight: 650; display: flex; align-items: center; gap: 10px; }
+      .legend { margin-left: auto; display: flex; gap: 14px; font-size: 13px; color: var(--muted); font-weight: 500; }
+      .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+      .side { display: grid; grid-template-rows: auto 1fr; gap: 16px; min-height: 0; }
+      .funnel { padding: 20px 22px; }
+      .step { margin-top: 13px; }
+      .step .row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+      .bar { height: 10px; border-radius: 6px; background: var(--panel2); overflow: hidden; }
+      .bar div { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #7c5cff, #2ee6d6); }
+      .events { padding: 20px 22px; overflow: hidden; min-height: 0; }
+      .ev { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+      .ev b { font-weight: 600; font-family: 'JBM', monospace; font-size: 12.5px; }
+      .ev .t { margin-left: auto; color: var(--muted); font-size: 12px; }
+      .ev .c { width: 8px; height: 8px; border-radius: 50%; }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <div class="brand"><img src="../assets/brand/mark.svg" />Orbit</div>
+      <div class="nav active"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></svg>Overview</div>
+      <div class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>Events</div>
+      <div class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z" /></svg>Funnels</div>
+      <div class="nav"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>Journeys</div>
+      <div class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>Cohorts</div>
+      <div class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>Alerts</div>
+      <div class="spacer"></div>
+      <div class="nav"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>Settings</div>
+      <div class="team"><div class="av">MK</div><div>Maya K.<div class="muted" style="font-size: 12px">Product</div></div></div>
+    </aside>
+    <main>
+      <header>
+        <h1>Overview</h1>
+        <span class="chip">Last 7 days</span>
+        <span class="live"><span class="dot" id="dot"></span>Live</span>
+        <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>Ask Orbit anything…<kbd>⌘K</kbd></div>
+      </header>
+      <section class="kpis">
+        <div class="card kpi"><div class="label">Active users</div><div class="value num" id="k0">48,213</div><div class="delta up">▲ 12.4% vs last week</div></div>
+        <div class="card kpi"><div class="label">Events / min</div><div class="value num" id="k1">1.24M</div><div class="delta up">▲ 8.1%</div></div>
+        <div class="card kpi"><div class="label">Conversion</div><div class="value num" id="k2">7.9%</div><div class="delta up">▲ 0.6 pts</div></div>
+        <div class="card kpi"><div class="label">p95 ingest latency</div><div class="value num" id="k3">84 ms</div><div class="delta up">▼ 12 ms</div></div>
+      </section>
+      <section class="grid">
+        <div class="card chart">
+          <h2>Events over time <span class="legend"><span><i style="background: #7c5cff"></i>Product events</span><span><i style="background: #2ee6d6"></i>Signups</span></span></h2>
+          <svg id="chart" viewBox="0 0 900 520" style="flex: 1; width: 100%; margin-top: 14px"></svg>
+        </div>
+        <div class="side">
+          <div class="card funnel">
+            <h2>Activation funnel</h2>
+            <div class="step"><div class="row"><span>Signed up</span><span class="num">100%</span></div><div class="bar"><div style="width: 100%"></div></div></div>
+            <div class="step"><div class="row"><span>Created project</span><span class="num">64%</span></div><div class="bar"><div style="width: 64%"></div></div></div>
+            <div class="step"><div class="row"><span>Connected data</span><span class="num">41%</span></div><div class="bar"><div style="width: 41%"></div></div></div>
+            <div class="step"><div class="row"><span>Invited team</span><span class="num">23%</span></div><div class="bar"><div style="width: 23%"></div></div></div>
+          </div>
+          <div class="card events"><h2>Live events</h2><div id="events"></div></div>
+        </div>
+      </section>
+    </main>
+    <script>
+      // Deterministic animation driven by window.render(t) (seconds).
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      const N = 64
+      const rnd = (i, s) => { const x = Math.sin(i * 12.9898 + s * 78.233) * 43758.5453; return x - Math.floor(x) }
+      const series = (s, base, amp) => Array.from({ length: N + 40 }, (_, i) => base + amp * (0.55 * Math.sin(i / 6 + s) + 0.25 * Math.sin(i / 2.3 + s * 2) + 0.35 * rnd(i, s)) + i * amp * 0.012)
+      const A = series(1, 300, 90)
+      const B = series(4, 120, 45)
+      const names = ['signup_completed', 'project_created', 'dashboard_viewed', 'funnel_saved', 'invite_sent', 'checkout_started', 'query_asked', 'alert_triggered']
+      const colors = ['#3ddc97', '#7c5cff', '#2ee6d6', '#ffb547', '#7c5cff', '#ff5d73', '#2ee6d6', '#ffb547']
+      function path(vals, start, count, w, h, max) {
+        const pts = []
+        for (let i = 0; i < count; i++) pts.push([(i / (N - 1)) * w, h - (vals[start + i] / max) * h])
+        let d = `M${pts[0][0]},${pts[0][1]}`
+        for (let i = 1; i < pts.length; i++) { const p = pts[i - 1], q = pts[i]; const mx = (p[0] + q[0]) / 2; d += ` C${mx},${p[1]} ${mx},${q[1]} ${q[0]},${q[1]}` }
+        return { d, last: pts[pts.length - 1] }
+      }
+      window.render = (t) => {
+        const w = 900, h = 470, max = 500
+        const grow = Math.min(N, 44 + Math.floor(t * 2.6))
+        const shift = 0
+        const a = path(A, shift, grow, w, h, max)
+        const b = path(B, shift, grow, w, h, max)
+        let svg = '<defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7c5cff" stop-opacity=".45"/><stop offset="1" stop-color="#7c5cff" stop-opacity="0"/></linearGradient></defs>'
+        for (let i = 0; i <= 4; i++) svg += `<line x1="0" x2="${w}" y1="${(i / 4) * h}" y2="${(i / 4) * h}" stroke="rgba(255,255,255,.06)"/>`
+        days.forEach((d, i) => (svg += `<text x="${(i / 6) * (w - 30) + 4}" y="${h + 40}" fill="#8a93a8" font-size="14" font-family="Inter">${d}</text>`))
+        svg += `<path d="${a.d} L${a.last[0]},${h} L0,${h} Z" fill="url(#ga)"/><path d="${a.d}" stroke="#7c5cff" stroke-width="3" fill="none"/>`
+        svg += `<path d="${b.d}" stroke="#2ee6d6" stroke-width="3" fill="none"/>`
+        const pulse = (t * 1.5) % 1
+        svg += `<circle cx="${a.last[0]}" cy="${a.last[1]}" r="${6 + 14 * pulse}" fill="#7c5cff" opacity="${0.4 * (1 - pulse)}"/><circle cx="${a.last[0]}" cy="${a.last[1]}" r="6" fill="#fff" stroke="#7c5cff" stroke-width="3"/>`
+        document.getElementById('chart').innerHTML = svg
+        document.getElementById('k0').textContent = Math.round(48213 + t * 37).toLocaleString('en-US')
+        document.getElementById('k1').textContent = (1.24 + t * 0.006).toFixed(2) + 'M'
+        document.getElementById('dot').style.setProperty('--pulse', `${6 * ((t * 1.2) % 1)}px`)
+        const rows = []
+        const k = Math.floor(t / 0.7)
+        const frac = (t / 0.7) % 1
+        for (let i = 0; i < 9; i++) {
+          const id = k - i
+          const n = names[((id % 8) + 8) % 8]
+          const c = colors[((id % 8) + 8) % 8]
+          const user = 'user_' + (8000 + ((id * 977) % 1999))
+          const op = i === 0 ? Math.min(1, frac * 4) : 1
+          const tx = i === 0 ? (1 - Math.min(1, frac * 4)) * -12 : 0
+          rows.push(`<div class="ev" style="opacity:${op};transform:translateY(${tx}px)"><span class="c" style="background:${c}"></span><b>${n}</b><span class="muted">${user}</span><span class="t">${i === 0 ? 'now' : i * 2 + 's ago'}</span></div>`)
+        }
+        document.getElementById('events').innerHTML = rows.join('')
+      }
+      window.render(0)
+    </script>
+  </body>
+</html>
