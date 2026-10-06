@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+
+# generated output (renders, stills, review packs, check reports)
+out/
+
+# caches: decoded audio, downloaded ML models, alignment scratch files
+.cache/
+
+# per-project build artifacts (frame sequences, audio mix, temp renders)
+projects/*/build/
+templates/*/build/
+projects/*/assets-src/.frames/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# local environment
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
