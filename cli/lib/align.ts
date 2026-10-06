@@ -109,7 +109,7 @@ export function mapAsrToScript(doc: ScriptDoc, asr: AsrWord[]): MaybeTime {
   const hyp: Array<{ norm: string; start: number | null; end: number | null }> = []
   for (const a of asr) {
     const n = normWord(a.word)
-    const expanded = expandNumberToken(a.word.trim()) ?? (n ? [n] : [])
+    const expanded = expandNumberToken(a.word.trim(), doc.language) ?? (n ? [n] : [])
     expanded.forEach((e, k) => {
       const span = a.start !== null && a.end !== null ? (a.end - a.start) / expanded.length : 0
       hyp.push({ norm: normWord(e), start: a.start !== null ? a.start + span * k : null, end: a.start !== null ? a.start + span * (k + 1) : null })
@@ -168,6 +168,64 @@ export function mapAsrToScript(doc: ScriptDoc, asr: AsrWord[]): MaybeTime {
     const cur = out[t.word]
     out[t.word] = cur ? { start: Math.min(cur.start, hw.start), end: Math.max(cur.end, hw.end) } : { start: hw.start, end: hw.end }
   })
+  return out
+}
+
+// ------------------------------------------------------------------ TTS timings
+
+/** build/voice.json as written by `mvs voice` (word spans only with Piper). */
+export interface TtsReport {
+  engine?: string
+  voice?: string
+  audioSha256?: string
+  scriptHash?: string
+  sentences: Array<{ start: number; end: number; words?: Array<[number, number]> }>
+}
+
+/**
+ * Word times from the TTS itself (Piper phoneme durations). Exact when the TTS
+ * spoke as many words as the script expects for a sentence; otherwise the
+ * sentence's words are placed by spoken length along its voiced time.
+ */
+export function ttsAlign(doc: ScriptDoc, rep: TtsReport): MaybeTime {
+  const flat = flattenWords(doc)
+  const out: MaybeTime = new Array(flat.length).fill(null)
+  const bySentence = new Map<number, number[]>()
+  flat.forEach((w, i) => bySentence.set(w.sentence, [...(bySentence.get(w.sentence) ?? []), i]))
+  for (const [si, idx] of bySentence) {
+    const s = rep.sentences[si]
+    if (!s) continue
+    const spans = s.words ?? []
+    const counts = idx.map((i) => Math.max(1, flat[i]!.spoken.length))
+    const total = counts.reduce((a, b) => a + b, 0)
+    if (spans.length === total) {
+      let c = 0
+      idx.forEach((wi, j) => {
+        out[wi] = { start: spans[c]![0], end: spans[c + counts[j]! - 1]![1], conf: 1 }
+        c += counts[j]!
+      })
+      continue
+    }
+    // the TTS split or merged words differently (hyphens, symbols): distribute by spoken length
+    const segs: Array<[number, number]> = spans.length ? spans : [[s.start, s.end]]
+    const voiced = segs.reduce((acc, [x, y]) => acc + (y - x), 0)
+    const toTime = (f: number) => {
+      let acc = 0
+      for (const [x, y] of segs) {
+        if (acc + (y - x) >= f * voiced - 1e-9) return x + (f * voiced - acc)
+        acc += y - x
+      }
+      return segs[segs.length - 1]![1]
+    }
+    const lens = idx.map((i) => flat[i]!.spoken.reduce((n, t) => n + normWord(t).length, 0) || 1)
+    const sum = lens.reduce((x, y) => x + y, 0)
+    let c = 0
+    idx.forEach((wi, j) => {
+      const start = toTime(c / sum)
+      c += lens[j]!
+      out[wi] = { start, end: toTime(c / sum), conf: spans.length ? 0.5 : 0.3 }
+    })
+  }
   return out
 }
 

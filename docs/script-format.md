@@ -45,16 +45,20 @@ Text before the first heading belongs to a section with id `main`.
 | Key | Used by | Default |
 | --- | --- | --- |
 | `title` | info only | — |
-| `language` | alignment + number expansion (`en`, `de`, `fr`, …) | `en` |
-| `voice` | `mvs voice` (Kokoro voice id) | `am_michael` |
+| `language` | alignment, number expansion (`en`, `de`) and the TTS engine (`de` → Piper) | `en` |
+| `voice` | `mvs voice`: Kokoro id (`am_michael`) or Piper id (`de_DE-thorsten-high`) | by language |
+| `speaker` | `mvs voice`: speaker of a multi-speaker Piper voice (`surprised`, …) | — |
 | `speed` | `mvs voice` speaking rate | `1.0` |
+| `seed` | `mvs voice` (Piper): take number; same seed, same read | `1` |
 | `lang` | `mvs voice` Kokoro language code (`en-us`, `en-gb`, `es`, `fr-fr`, `it`, `pt-br`, `hi`, `ja`, `zh`) | from `language` |
 | `sentencePause` | `mvs voice`: silence between sentences (s) | `0.32` |
 | `sectionPause` | `mvs voice`: silence between sections (s) | `0.65` |
 
 ## Numbers and symbols
 
-In English scripts, numeric tokens are expanded to the words a speaker says, for alignment and TTS:
+In English and German scripts, numeric tokens, symbols and domains are expanded to the words a speaker says, for alignment and TTS.
+
+**English** (`language: en`):
 
 | Written | Spoken |
 | --- | --- |
@@ -68,9 +72,29 @@ In English scripts, numeric tokens are expanded to the words a speaker says, for
 | `21st` | twenty first |
 | `24/7` | twenty four seven |
 | `v2`, `M3` | v two, m three |
-| `&`, `+`, `@` | and, plus, at |
+| `&`, `+`, `@`, `%` | and, plus, at, percent |
+| `orbit.dev`, `www.acme.com` | orbit dot dev, w w w dot acme dot com |
 
-When the speaker says something else (`3×` as "three x", `orbit.dev` as "orbit dot dev"), write it explicitly: `{3×|three x}`, `{orbit.dev|orbit dot dev}`. For other languages always use `{…|…}` for numbers.
+**German** (`language: de`): numbers below a million are one word, as written in German; `.` groups thousands and `,` is the decimal separator.
+
+| Written | Spoken |
+| --- | --- |
+| `21`, `101`, `1.250` | einundzwanzig, hunderteins, tausendzweihundertfünfzig |
+| `2026`, `1999` | zweitausendsechsundzwanzig, neunzehnhundertneunundneunzig |
+| `2.500.000` | zwei Millionen fünfhunderttausend |
+| `3,5`, `3.5` | drei Komma fünf, drei Punkt fünf (versions) |
+| `40 %`, `40%` | vierzig Prozent |
+| `3x`, `3×` | dreimal |
+| `5 €`, `5€`, `€5`, `$5k` | fünf Euro, fünftausend Dollar |
+| `10k`, `1,2 Mio.`, `2 Mrd.` | zehntausend, eins Komma zwei Millionen, zwei Milliarden |
+| `24/7`, `v2` | vierundzwanzig sieben, v zwei |
+| `&`, `+`, `@` | und, plus, at |
+| `acme.de` | acme punkt de |
+| `z.B.`, `d.h.`, `u.a.`, `u.U.`, `z.T.`, `bzw.`, `bspw.`, `ca.`, `usw.`, `inkl.`, `zzgl.`, `ggf.`, `evtl.`, `vgl.`, `sog.`, `Nr.` | zum Beispiel, das heißt, unter anderem, … |
+
+`1` is read „eins“; where German needs „ein/eine“ write it: `{1 Woche|eine Woche}`. Ordinals (`1.`) and times (`10:30`) are not expanded — write them out or use braces.
+
+When the speaker says something else (`3×` as "three x", `orbit.dev` as "orbit dev"), write it explicitly: `{3×|three x}`, `{orbit.dev|orbit dev}`. For other languages always use `{…|…}` for numbers.
 
 On screen and in lookups the **display** form is used: write `f.in('40%')`, not `f.in('forty percent')`.
 

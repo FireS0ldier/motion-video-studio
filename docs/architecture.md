@@ -80,7 +80,7 @@ For output frame `n` at `t = n / fps`:
 
 ## Audio (Node)
 
-`cli/lib`: `audio-io` (ffmpeg decode to 48 kHz float with a disk cache), `dsp` (RMS envelopes, smoothing, resampling), `loudness` (BS.1770 K-weighting, gating, integrated LUFS, true peak by 4× oversampling), `analysis` (onsets, silences, tempo by comb-filter search, beat grid), `align` (engine dispatch, script ↔ ASR word mapping by Needleman–Wunsch, refinement), `python` (uv runner), `sfx-synth` (procedural sound library and music bed), `wav` (writer/reader). `commands/mix.ts` is the mixer described in [audio.md](audio.md).
+`cli/lib`: `audio-io` (ffmpeg decode to 48 kHz float with a disk cache), `dsp` (RMS envelopes, smoothing, resampling), `loudness` (BS.1770 K-weighting, gating, integrated LUFS, true peak by 4× oversampling), `analysis` (onsets, silences, tempo by comb-filter search, beat grid), `align` (engine dispatch, script ↔ ASR word mapping by Needleman–Wunsch, refinement), `python` (uv runner), `tts` (TTS engine and voice choice; Piper voice catalog in `tools/python/piper-voices.json`), `sfx-synth` (procedural sound library and music bed), `wav` (writer/reader). `commands/mix.ts` is the mixer described in [audio.md](audio.md).
 
 ## Determinism
 

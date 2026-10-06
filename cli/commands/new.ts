@@ -6,11 +6,13 @@ import type { Args } from '../lib/args.ts'
 import { CliError, color, log } from '../lib/log.ts'
 import { PROJECTS, rel, TEMPLATES } from '../lib/paths.ts'
 
-export const newHelp = `mvs new <name> [--template starter] [--title "Product launch"] [--format landscape] [--force]
+export const newHelp = `mvs new <name> [--template starter] [--language en|de] [--title "Product launch"] [--format landscape] [--force]
 
 Create projects/<name>/ from a template. Templates live in templates/:
-  starter   generic product video (hook, problem, product UI drawn with the kit,
-            features, stats, call to action) — works in every format
+  starter     generic product video (hook, problem, product UI drawn with the kit,
+              features, stats, call to action) — works in every format
+  starter-de  the same video in German (German script, scene texts and Piper voice);
+              chosen by --language de
 Formats: ${Object.keys(formats).join(', ')}
 Next steps are printed after creation (script → voice → align → preview → render).`
 
@@ -28,7 +30,8 @@ export async function newCommand(a: Args) {
   if (!raw) throw new CliError('Give the project a name: mvs new <name>')
   const id = slugify(raw)
   if (!id) throw new CliError(`"${raw}" is not a usable folder name.`)
-  const template = a.str('template', 'starter')!
+  const language = (a.str('language') ?? 'en').toLowerCase()
+  const template = a.str('template') ?? (language.startsWith('de') ? 'starter-de' : 'starter')
   const src = join(TEMPLATES, template)
   if (!existsSync(src)) throw new CliError(`Template "${template}" not found.`, `Templates: ${readdirSync(TEMPLATES).join(', ')}`)
   const dest = join(PROJECTS, id)
@@ -51,7 +54,7 @@ ${color.bold('Next steps')}
      and ${rel(join(dest, 'brand.ts'))}      (colors, fonts, logo)
   2. Put screenshots/recordings/logo into ${rel(join(dest, 'assets'))}/
   3. Voiceover: drop a file at assets/audio/voiceover.wav, or generate one:
-       npx mvs voice ${id}
+       npx mvs voice ${id}        (local TTS; German voices also write the word timing)
   4. npx mvs align ${id}        word timing (or --estimate without a voiceover)
      npx mvs analyze ${id}      audio envelope for audio-reactive motion
   5. npx mvs dev ${id}          live preview
