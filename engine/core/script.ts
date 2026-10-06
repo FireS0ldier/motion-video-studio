@@ -177,11 +177,12 @@ function splitPunct(token: string): [core: string, trail: string] {
   return m ? [m[1]!, m[2]!] : [token, '']
 }
 
-function parseSentence(raw: string, language: string): { sentence: ScriptSentence; pause: number } {
+function parseSentence(raw: string, language: string): { sentence: ScriptSentence; pause: number; lead: number } {
   const words: ScriptWord[] = []
   const display: string[] = []
   const tts: string[] = []
   let pause = 0
+  let lead = 0
   const en = language.toLowerCase().startsWith('en')
   for (const m of raw.matchAll(TOKEN_RE)) {
     if (m[1] !== undefined) {
@@ -194,7 +195,10 @@ function parseSentence(raw: string, language: string): { sentence: ScriptSentenc
     }
     if (m[0].startsWith('[pause')) {
       const v = m[4] ? Number(m[4]) : 0.5
-      pause += m[5] === 'ms' ? v / 1000 : v
+      const sec = m[5] === 'ms' ? v / 1000 : v
+      // a pause before the first word belongs to the gap after the previous sentence
+      if (words.length === 0) lead += sec
+      else pause += sec
       continue
     }
     const token = m[6]!
@@ -223,6 +227,7 @@ function parseSentence(raw: string, language: string): { sentence: ScriptSentenc
   return {
     sentence: { text: display.join(' '), tts: tts.join(' '), words, pauseAfter: 0 },
     pause,
+    lead,
   }
 }
 
@@ -238,7 +243,8 @@ export function parseScript(src: string): ScriptDoc {
     // paragraphs are joined; [pause] markers survive as tokens
     const text = current.text.join(' ').replace(/\s+/g, ' ').trim()
     for (const raw of splitSentences(text)) {
-      const { sentence, pause } = parseSentence(raw, language)
+      const { sentence, pause, lead } = parseSentence(raw, language)
+      if (lead && sentences.length) sentences[sentences.length - 1]!.pauseAfter += lead
       if (sentence.words.length === 0) {
         // a bare [pause] line extends the pause after the previous sentence
         if (sentences.length) sentences[sentences.length - 1]!.pauseAfter += pause

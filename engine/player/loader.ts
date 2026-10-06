@@ -43,11 +43,18 @@ export async function loadProject(id: string, opts: { format?: Format | FormatNa
     analysisFiles[`${base}data/audio.json`]?.() ?? null,
     scriptFiles[`${base}script.md`]?.() ?? null,
   ])
-  const project = resolveProject({ id, def: mod.default, timing, analysis, script, format: opts.format })
   const prefix = `${base}assets/`
   const known = Object.keys(assetFiles)
     .filter((k) => k.startsWith(prefix))
     .map((k) => k.slice(prefix.length))
+  // convention: assets/audio/voiceover.* and assets/audio/music.* are used automatically
+  const def = { ...mod.default, audio: { ...mod.default.audio } }
+  const byName = (name: string) => known.find((k) => new RegExp(`^audio/${name}\\.(wav|mp3|m4a|flac|ogg|aac)$`, 'i').test(k))
+  const vo = byName('voiceover')
+  if (!def.audio.voiceover && vo) def.audio.voiceover = { src: `assets/${vo}` }
+  const music = byName('music')
+  if (!def.audio.music && music) def.audio.music = { src: `assets/${music}` }
+  const project = resolveProject({ id, def, timing, analysis, script, format: opts.format })
   const assets = new AssetStore({ projectBase: base, known })
   const fontErrors = await loadBrandFonts(project.brand)
   for (const e of fontErrors) project.warnings.push(e)
@@ -58,7 +65,7 @@ export async function loadProject(id: string, opts: { format?: Format | FormatNa
     for (const [k, msg] of assets.errors) project.warnings.push(`asset ${k}: ${msg}`)
   }
   const audio = [{ url: `${base}build/mix.wav`, offset: 0 }]
-  const vo = project.audio.voiceover
-  if (vo?.src) audio.push({ url: `${base}${vo.src}`, offset: vo.offset ?? 0 })
+  const voice = project.audio.voiceover
+  if (voice?.src) audio.push({ url: `${base}${voice.src}`, offset: voice.offset ?? 0 })
   return { project, assets, audio, fontErrors }
 }

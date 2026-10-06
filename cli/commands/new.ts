@@ -40,7 +40,8 @@ export async function newCommand(a: Args) {
   for (const file of walk(dest)) {
     if (!/\.(ts|md|json|txt)$/.test(file)) continue
     const text = readFileSync(file, 'utf8')
-    const next = text.replaceAll('{{id}}', id).replaceAll('{{title}}', title).replaceAll("'{{format}}'", `'${format}'`).replaceAll('{{format}}', format)
+    let next = text.replaceAll('{{id}}', id).replaceAll('{{title}}', title)
+    if (file.endsWith('project.ts')) next = next.replace(/format: '[a-z0-9]+'/, `format: '${format}'`)
     if (next !== text) writeFileSync(file, next)
   }
   log.ok(`Created ${rel(dest)} from template "${template}" (${format})`)

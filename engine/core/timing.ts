@@ -145,43 +145,57 @@ export class Timing {
     return this.words[this.words.length - 1]?.end ?? 0
   }
 
-  /** All start indices where the phrase occurs. */
-  matches(phrase: string): number[] {
-    const tokens = normPhrase(phrase)
-    if (tokens.length === 0) return []
-    const out: number[] = []
-    outer: for (let i = 0; i + tokens.length <= this.norms.length; i++) {
-      for (let k = 0; k < tokens.length; k++) if (this.norms[i + k] !== tokens[k]) continue outer
-      out.push(i)
+  /**
+   * All [first, last] word index pairs where the phrase occurs. Matching works
+   * on concatenated normalized text, so "10 hours" also finds a single display
+   * token "10 hours" and "real-time" finds "real time".
+   */
+  spans(phrase: string): Array<[number, number]> {
+    const target = normPhrase(phrase).join('')
+    if (!target) return []
+    const out: Array<[number, number]> = []
+    for (let i = 0; i < this.norms.length; i++) {
+      let acc = ''
+      for (let j = i; j < this.norms.length; j++) {
+        acc += this.norms[j]
+        if (acc === target) {
+          out.push([i, j])
+          break
+        }
+        if (!target.startsWith(acc)) break
+      }
     }
     return out
+  }
+
+  /** All start indices where the phrase occurs. */
+  matches(phrase: string): number[] {
+    return this.spans(phrase).map((s) => s[0])
   }
 
   /** Time span of a phrase ("Meet Orbit"), or null when not found. */
   find(phrase: string, opts: FindOptions = {}): Span | null {
     const key = `${phrase}\u0000${opts.from ?? ''}\u0000${opts.to ?? ''}\u0000${opts.nth ?? 0}`
     if (this.cache.has(key)) return this.cache.get(key)!
-    const n = normPhrase(phrase).length
-    const all = this.matches(phrase)
-    let pick: number | undefined
+    const all = this.spans(phrase)
+    let pick: [number, number] | undefined
     if (all.length) {
       const nth = opts.nth ?? 0
       const from = opts.from ?? -Infinity
       const to = opts.to ?? Infinity
-      const inWindow = all.filter((i) => this.words[i]!.start >= from - 0.5 && this.words[i]!.start < to + 0.25)
+      const inWindow = all.filter(([i]) => this.words[i]!.start >= from - 0.5 && this.words[i]!.start < to + 0.25)
       pick = inWindow.length ? inWindow[Math.min(nth, inWindow.length - 1)] : all[Math.min(nth, all.length - 1)]
     }
-    const span: Span | null =
-      pick === undefined
-        ? null
-        : {
-            start: this.words[pick]!.start,
-            end: this.words[pick + n - 1]!.end,
-            text: this.words
-              .slice(pick, pick + n)
-              .map((w) => w.text)
-              .join(' '),
-          }
+    const span: Span | null = pick
+      ? {
+          start: this.words[pick[0]]!.start,
+          end: this.words[pick[1]]!.end,
+          text: this.words
+            .slice(pick[0], pick[1] + 1)
+            .map((w) => w.text)
+            .join(' '),
+        }
+      : null
     this.cache.set(key, span)
     return span
   }
